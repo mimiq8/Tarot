@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -230,28 +231,28 @@ const CARDS = [
 ];
 
 const REVERSED_TEXTS = {
-  fool:          "\u6e96\u5099\u4e0d\u8db3\u3084\u7121\u8b00\u3055\u3078\u306e\u8b66\u544a\u3067\u3059\u3002\u4eca\u4e00\u5ea6\u3001\u8db3\u5143\u3092\u78ba\u304b\u3081\u3066\u304b\u3089\u8e0f\u307f\u51fa\u3057\u3066\u307f\u307e\u3057\u3087\u3046\u3002",
-  world:         "\u5b8c\u6210\u9593\u8fd1\u3067\u3059\u304c\u3001\u4f55\u304b\u304c\u672a\u5b8c\u306e\u307e\u307e\u3067\u3059\u3002\u7126\u3089\u305a\u6700\u5f8c\u306e\u4ed5\u4e0a\u3052\u306b\u4e01\u5be7\u306b\u5411\u304d\u5408\u3063\u3066\u3002",
-  judgement:     "\u81ea\u5df1\u6279\u5224\u304c\u5f37\u304f\u306a\u3063\u3066\u3044\u308b\u30b5\u30a4\u30f3\u3067\u3059\u3002\u904e\u53bb\u3092\u624b\u653e\u3057\u3001\u81ea\u5206\u3092\u8a31\u3059\u3053\u3068\u304c\u518d\u751f\u3078\u306e\u9375\u3067\u3059\u3002",
-  sun:           "\u81ea\u4fe1\u304c\u63fa\u3089\u3044\u3067\u3044\u307e\u3059\u304c\u3001\u3042\u306a\u305f\u306e\u8f1d\u304d\u306f\u6d88\u3048\u3066\u3044\u307e\u305b\u3093\u3002\u5185\u5074\u306e\u5149\u3092\u4fe1\u3058\u76f4\u3057\u3066\u304f\u3060\u3055\u3044\u3002",
-  moon:          "\u4e0d\u5b89\u3084\u6df7\u4e71\u304c\u5897\u5e45\u3057\u3066\u3044\u307e\u3059\u3002\u4eca\u306f\u5927\u304d\u306a\u6c7a\u65ad\u3092\u907f\u3051\u3001\u60c5\u5831\u3092\u6574\u7406\u3059\u308b\u6642\u9593\u3092\u53d6\u308a\u307e\u3057\u3087\u3046\u3002",
-  star:          "\u5e0c\u671b\u304c\u898b\u3048\u306b\u304f\u304f\u306a\u3063\u3066\u3044\u307e\u3059\u304c\u3001\u305d\u308c\u306f\u4e00\u6642\u7684\u306a\u3082\u306e\u3002\u5c0f\u3055\u306a\u5149\u3092\u624b\u653e\u3055\u306a\u3044\u3067\u304f\u3060\u3055\u3044\u3002",
-  tower:         "\u5909\u5316\u3078\u306e\u62b5\u6297\u304c\u7d9a\u3044\u3066\u3044\u307e\u3059\u3002\u5d29\u308c\u308b\u3053\u3068\u3092\u6050\u308c\u305a\u3001\u4eca\u3053\u305d\u53e4\u3044\u6bbb\u3092\u8131\u304e\u6368\u3066\u308b\u6642\u3067\u3059\u3002",
-  devil:         "\u57f7\u7740\u306b\u6c17\u3065\u304d\u59cb\u3081\u3066\u3044\u307e\u3059\u3002\u9396\u306f\u601d\u3063\u305f\u3088\u308a\u7d30\u3044\u306f\u305a\u3002\u4e00\u6b69\u5f15\u3044\u3066\u5168\u4f53\u3092\u898b\u6e21\u3057\u3066\u307f\u307e\u3057\u3087\u3046\u3002",
-  temperance:    "\u7126\u308a\u3084\u30a2\u30f3\u30d0\u30e9\u30f3\u30b9\u304c\u751f\u3058\u3066\u3044\u307e\u3059\u3002\u547c\u5438\u3092\u6574\u3048\u3001\u30da\u30fc\u30b9\u3092\u843d\u3068\u3059\u3053\u3068\u304c\u6700\u5584\u306e\u9078\u629e\u3067\u3059\u3002",
-  wheel:         "\u6d41\u308c\u306b\u4e57\u308a\u9045\u308c\u3066\u3044\u308b\u611f\u899a\u304c\u3042\u308b\u304b\u3082\u3057\u308c\u307e\u305b\u3093\u3002\u7126\u3089\u305a\u3001\u6b21\u306e\u30b5\u30a4\u30af\u30eb\u306b\u5099\u3048\u307e\u3057\u3087\u3046\u3002",
-  hanged:        "\u7121\u99c4\u306a\u6211\u6162\u304c\u7d9a\u3044\u3066\u3044\u308b\u30b5\u30a4\u30f3\u3067\u3059\u3002\u672c\u5f53\u306b\u5fc5\u8981\u306a\u505c\u6ede\u306a\u306e\u304b\u3001\u898b\u76f4\u3059\u52c7\u6c17\u3092\u6301\u3061\u307e\u3057\u3087\u3046\u3002",
-  death:         "\u5909\u5316\u3092\u62d2\u3093\u3067\u3044\u308b\u3053\u3068\u3067\u505c\u6ede\u304c\u8d77\u304d\u3066\u3044\u307e\u3059\u3002\u624b\u653e\u3059\u6016\u3055\u3088\u308a\u3001\u624b\u653e\u3057\u305f\u5148\u306e\u81ea\u7531\u3092\u60f3\u50cf\u3057\u3066\u3002",
-  strength:      "\u5185\u306a\u308b\u529b\u3092\u904e\u5c0f\u8a55\u4fa1\u3057\u3066\u3044\u307e\u3059\u3002\u3042\u306a\u305f\u306f\u3082\u3063\u3068\u5f37\u3044\u3002\u4eca\u3053\u305d\u81ea\u5206\u3092\u4fe1\u3058\u76f4\u3059\u6642\u3067\u3059\u3002",
-  highpriestess: "\u76f4\u611f\u3092\u898b\u904e\u3054\u3057\u3066\u3044\u308b\u30b5\u30a4\u30f3\u3067\u3059\u3002\u982d\u3067\u8003\u3048\u3059\u304e\u305a\u3001\u9759\u304b\u306b\u5185\u306a\u308b\u58f0\u306b\u8033\u3092\u6f84\u307e\u305b\u3066\u3002",
-  magician:      "\u624d\u80fd\u3092\u6d3b\u304b\u3057\u304d\u308c\u3066\u3044\u307e\u305b\u3093\u3002\u6563\u6f2b\u306b\u306a\u3063\u305f\u30a8\u30cd\u30eb\u30ae\u30fc\u3092\u4e00\u70b9\u306b\u96c6\u4e2d\u3055\u305b\u307e\u3057\u3087\u3046\u3002",
-  hermit:        "\u5b64\u7acb\u3057\u3059\u304e\u3066\u3044\u308b\u304b\u3082\u3057\u308c\u307e\u305b\u3093\u3002\u9069\u5ea6\u306b\u4ed6\u8005\u3068\u3064\u306a\u304c\u308b\u3053\u3068\u3067\u3001\u65b0\u3057\u3044\u5149\u304c\u898b\u3048\u3066\u304d\u307e\u3059\u3002",
-  justice:       "\u4e0d\u516c\u5e73\u3055\u3078\u306e\u6012\u308a\u304c\u5fc3\u3092\u4e71\u3057\u3066\u3044\u307e\u3059\u3002\u307e\u305a\u81ea\u5206\u306e\u884c\u52d5\u3092\u632f\u308a\u8fd4\u308b\u3053\u3068\u304b\u3089\u59cb\u3081\u307e\u3057\u3087\u3046\u3002",
-  chariot:       "\u529b\u4efb\u305b\u306b\u9032\u3082\u3046\u3068\u3057\u3066\u3044\u307e\u305b\u3093\u304b\u3002\u65b9\u5411\u6027\u3092\u518d\u78ba\u8a8d\u3057\u3001\u30a8\u30cd\u30eb\u30ae\u30fc\u3092\u8ce2\u304f\u4f7f\u3044\u307e\u3057\u3087\u3046\u3002",
-  lovers:        "\u9078\u629e\u3092\u5148\u5ef6\u3070\u3057\u306b\u3057\u3066\u3044\u308b\u30b5\u30a4\u30f3\u3067\u3059\u3002\u5fc3\u306e\u58f0\u306b\u6b63\u76f4\u306b\u306a\u308b\u3053\u3068\u304c\u3001\u8ff7\u3044\u3092\u65ad\u3061\u5207\u308b\u9375\u3067\u3059\u3002",
-  hierophant:    "\u65e2\u5b58\u306e\u30eb\u30fc\u30eb\u306b\u7e1b\u3089\u308c\u3059\u304e\u3066\u3044\u307e\u3059\u3002\u81ea\u5206\u306b\u3068\u3063\u3066\u306e\u771f\u5b9f\u3092\u3001\u81ea\u3089\u554f\u3044\u76f4\u3059\u6642\u304c\u6765\u3066\u3044\u307e\u3059\u3002",
-  emperor:       "\u30b3\u30f3\u30c8\u30ed\u30fc\u30eb\u3078\u306e\u57f7\u7740\u304c\u751f\u3058\u3066\u3044\u307e\u3059\u3002\u3059\u3079\u3066\u3092\u63e1\u308a\u3057\u3081\u305a\u3001\u59d4\u306d\u308b\u52c7\u6c17\u3082\u529b\u306e\u3072\u3068\u3064\u3067\u3059\u3002",
-  empress:       "\u81ea\u5df1\u72a0\u7272\u306b\u306a\u3063\u3066\u3044\u307e\u305b\u3093\u304b\u3002\u307e\u305a\u81ea\u5206\u81ea\u8eab\u3092\u5927\u5207\u306b\u3059\u308b\u3053\u3068\u3067\u3001\u5468\u308a\u3078\u306e\u611b\u3082\u6df1\u307e\u308a\u307e\u3059\u3002",
+fool:          “\u6e96\u5099\u4e0d\u8db3\u3084\u7121\u8b00\u3055\u3078\u306e\u8b66\u544a\u3067\u3059\u3002\u4eca\u4e00\u5ea6\u3001\u8db3\u5143\u3092\u78ba\u304b\u3081\u3066\u304b\u3089\u8e0f\u307f\u51fa\u3057\u3066\u307f\u307e\u3057\u3087\u3046\u3002”,
+world:         “\u5b8c\u6210\u9593\u8fd1\u3067\u3059\u304c\u3001\u4f55\u304b\u304c\u672a\u5b8c\u306e\u307e\u307e\u3067\u3059\u3002\u7126\u3089\u305a\u6700\u5f8c\u306e\u4ed5\u4e0a\u3052\u306b\u4e01\u5be7\u306b\u5411\u304d\u5408\u3063\u3066\u3002”,
+judgement:     “\u81ea\u5df1\u6279\u5224\u304c\u5f37\u304f\u306a\u3063\u3066\u3044\u308b\u30b5\u30a4\u30f3\u3067\u3059\u3002\u904e\u53bb\u3092\u624b\u653e\u3057\u3001\u81ea\u5206\u3092\u8a31\u3059\u3053\u3068\u304c\u518d\u751f\u3078\u306e\u9375\u3067\u3059\u3002”,
+sun:           “\u81ea\u4fe1\u304c\u63fa\u3089\u3044\u3067\u3044\u307e\u3059\u304c\u3001\u3042\u306a\u305f\u306e\u8f1d\u304d\u306f\u6d88\u3048\u3066\u3044\u307e\u305b\u3093\u3002\u5185\u5074\u306e\u5149\u3092\u4fe1\u3058\u76f4\u3057\u3066\u304f\u3060\u3055\u3044\u3002”,
+moon:          “\u4e0d\u5b89\u3084\u6df7\u4e71\u304c\u5897\u5e45\u3057\u3066\u3044\u307e\u3059\u3002\u4eca\u306f\u5927\u304d\u306a\u6c7a\u65ad\u3092\u907f\u3051\u3001\u60c5\u5831\u3092\u6574\u7406\u3059\u308b\u6642\u9593\u3092\u53d6\u308a\u307e\u3057\u3087\u3046\u3002”,
+star:          “\u5e0c\u671b\u304c\u898b\u3048\u306b\u304f\u304f\u306a\u3063\u3066\u3044\u307e\u3059\u304c\u3001\u305d\u308c\u306f\u4e00\u6642\u7684\u306a\u3082\u306e\u3002\u5c0f\u3055\u306a\u5149\u3092\u624b\u653e\u3055\u306a\u3044\u3067\u304f\u3060\u3055\u3044\u3002”,
+tower:         “\u5909\u5316\u3078\u306e\u62b5\u6297\u304c\u7d9a\u3044\u3066\u3044\u307e\u3059\u3002\u5d29\u308c\u308b\u3053\u3068\u3092\u6050\u308c\u305a\u3001\u4eca\u3053\u305d\u53e4\u3044\u6bbb\u3092\u8131\u304e\u6368\u3066\u308b\u6642\u3067\u3059\u3002”,
+devil:         “\u57f7\u7740\u306b\u6c17\u3065\u304d\u59cb\u3081\u3066\u3044\u307e\u3059\u3002\u9396\u306f\u601d\u3063\u305f\u3088\u308a\u7d30\u3044\u306f\u305a\u3002\u4e00\u6b69\u5f15\u3044\u3066\u5168\u4f53\u3092\u898b\u6e21\u3057\u3066\u307f\u307e\u3057\u3087\u3046\u3002”,
+temperance:    “\u7126\u308a\u3084\u30a2\u30f3\u30d0\u30e9\u30f3\u30b9\u304c\u751f\u3058\u3066\u3044\u307e\u3059\u3002\u547c\u5438\u3092\u6574\u3048\u3001\u30da\u30fc\u30b9\u3092\u843d\u3068\u3059\u3053\u3068\u304c\u6700\u5584\u306e\u9078\u629e\u3067\u3059\u3002”,
+wheel:         “\u6d41\u308c\u306b\u4e57\u308a\u9045\u308c\u3066\u3044\u308b\u611f\u899a\u304c\u3042\u308b\u304b\u3082\u3057\u308c\u307e\u305b\u3093\u3002\u7126\u3089\u305a\u3001\u6b21\u306e\u30b5\u30a4\u30af\u30eb\u306b\u5099\u3048\u307e\u3057\u3087\u3046\u3002”,
+hanged:        “\u7121\u99c4\u306a\u6211\u6162\u304c\u7d9a\u3044\u3066\u3044\u308b\u30b5\u30a4\u30f3\u3067\u3059\u3002\u672c\u5f53\u306b\u5fc5\u8981\u306a\u505c\u6ede\u306a\u306e\u304b\u3001\u898b\u76f4\u3059\u52c7\u6c17\u3092\u6301\u3061\u307e\u3057\u3087\u3046\u3002”,
+death:         “\u5909\u5316\u3092\u62d2\u3093\u3067\u3044\u308b\u3053\u3068\u3067\u505c\u6ede\u304c\u8d77\u304d\u3066\u3044\u307e\u3059\u3002\u624b\u653e\u3059\u6016\u3055\u3088\u308a\u3001\u624b\u653e\u3057\u305f\u5148\u306e\u81ea\u7531\u3092\u60f3\u50cf\u3057\u3066\u3002”,
+strength:      “\u5185\u306a\u308b\u529b\u3092\u904e\u5c0f\u8a55\u4fa1\u3057\u3066\u3044\u307e\u3059\u3002\u3042\u306a\u305f\u306f\u3082\u3063\u3068\u5f37\u3044\u3002\u4eca\u3053\u305d\u81ea\u5206\u3092\u4fe1\u3058\u76f4\u3059\u6642\u3067\u3059\u3002”,
+highpriestess: “\u76f4\u611f\u3092\u898b\u904e\u3054\u3057\u3066\u3044\u308b\u30b5\u30a4\u30f3\u3067\u3059\u3002\u982d\u3067\u8003\u3048\u3059\u304e\u305a\u3001\u9759\u304b\u306b\u5185\u306a\u308b\u58f0\u306b\u8033\u3092\u6f84\u307e\u305b\u3066\u3002”,
+magician:      “\u624d\u80fd\u3092\u6d3b\u304b\u3057\u304d\u308c\u3066\u3044\u307e\u305b\u3093\u3002\u6563\u6f2b\u306b\u306a\u3063\u305f\u30a8\u30cd\u30eb\u30ae\u30fc\u3092\u4e00\u70b9\u306b\u96c6\u4e2d\u3055\u305b\u307e\u3057\u3087\u3046\u3002”,
+hermit:        “\u5b64\u7acb\u3057\u3059\u304e\u3066\u3044\u308b\u304b\u3082\u3057\u308c\u307e\u305b\u3093\u3002\u9069\u5ea6\u306b\u4ed6\u8005\u3068\u3064\u306a\u304c\u308b\u3053\u3068\u3067\u3001\u65b0\u3057\u3044\u5149\u304c\u898b\u3048\u3066\u304d\u307e\u3059\u3002”,
+justice:       “\u4e0d\u516c\u5e73\u3055\u3078\u306e\u6012\u308a\u304c\u5fc3\u3092\u4e71\u3057\u3066\u3044\u307e\u3059\u3002\u307e\u305a\u81ea\u5206\u306e\u884c\u52d5\u3092\u632f\u308a\u8fd4\u308b\u3053\u3068\u304b\u3089\u59cb\u3081\u307e\u3057\u3087\u3046\u3002”,
+chariot:       “\u529b\u4efb\u305b\u306b\u9032\u3082\u3046\u3068\u3057\u3066\u3044\u307e\u305b\u3093\u304b\u3002\u65b9\u5411\u6027\u3092\u518d\u78ba\u8a8d\u3057\u3001\u30a8\u30cd\u30eb\u30ae\u30fc\u3092\u8ce2\u304f\u4f7f\u3044\u307e\u3057\u3087\u3046\u3002”,
+lovers:        “\u9078\u629e\u3092\u5148\u5ef6\u3070\u3057\u306b\u3057\u3066\u3044\u308b\u30b5\u30a4\u30f3\u3067\u3059\u3002\u5fc3\u306e\u58f0\u306b\u6b63\u76f4\u306b\u306a\u308b\u3053\u3068\u304c\u3001\u8ff7\u3044\u3092\u65ad\u3061\u5207\u308b\u9375\u3067\u3059\u3002”,
+hierophant:    “\u65e2\u5b58\u306e\u30eb\u30fc\u30eb\u306b\u7e1b\u3089\u308c\u3059\u304e\u3066\u3044\u307e\u3059\u3002\u81ea\u5206\u306b\u3068\u3063\u3066\u306e\u771f\u5b9f\u3092\u3001\u81ea\u3089\u554f\u3044\u76f4\u3059\u6642\u304c\u6765\u3066\u3044\u307e\u3059\u3002”,
+emperor:       “\u30b3\u30f3\u30c8\u30ed\u30fc\u30eb\u3078\u306e\u57f7\u7740\u304c\u751f\u3058\u3066\u3044\u307e\u3059\u3002\u3059\u3079\u3066\u3092\u63e1\u308a\u3057\u3081\u305a\u3001\u59d4\u306d\u308b\u52c7\u6c17\u3082\u529b\u306e\u3072\u3068\u3064\u3067\u3059\u3002”,
+empress:       “\u81ea\u5df1\u72a0\u7272\u306b\u306a\u3063\u3066\u3044\u307e\u305b\u3093\u304b\u3002\u307e\u305a\u81ea\u5206\u81ea\u8eab\u3092\u5927\u5207\u306b\u3059\u308b\u3053\u3068\u3067\u3001\u5468\u308a\u3078\u306e\u611b\u3082\u6df1\u307e\u308a\u307e\u3059\u3002”,
 };
 
 </script>
@@ -260,216 +261,217 @@ const REVERSED_TEXTS = {
 const LINE_URL="https://line.me/R/ti/p/@796tkxeg";
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 
-let state={step:"mode",mode:null,drawn:[],idx:0,reflection:""};
-function setState(s){state={...state,...s};render();}
+let state={step:“mode”,mode:null,drawn:[],idx:0,reflection:””};
+function setState(s){state={…state,…s};render();}
 
-const stars=Array.from({length:20},(_,i)=>({x:((i*43+11)%100)+"%",y:((i*61+9)%100)+"%",size:0.8+(i%4)*0.6,delay:(i*0.3)%4.5,dur:1.6+(i%7)*0.4}));
+const stars=Array.from({length:20},(_,i)=>({x:((i*43+11)%100)+”%”,y:((i*61+9)%100)+”%”,size:0.8+(i%4)*0.6,delay:(i*0.3)%4.5,dur:1.6+(i%7)*0.4}));
 
-function el(tag,props,...children){
-  const e=document.createElement(tag);
-  if(props)Object.entries(props).forEach(([k,v])=>{
-    if(k==="class")e.className=v;
-    else if(k==="style"&&typeof v==="object")Object.assign(e.style,v);
-    else if(k.startsWith("on"))e.addEventListener(k.slice(2).toLowerCase(),v);
-    else e.setAttribute(k,v);
-  });
-  children.flat(Infinity).forEach(c=>{
-    if(c==null||c===false)return;
-    e.appendChild(typeof c==="string"||typeof c==="number"?document.createTextNode(c):c);
-  });
-  return e;
+function el(tag,props,…children){
+const e=document.createElement(tag);
+if(props)Object.entries(props).forEach(([k,v])=>{
+if(k===“class”)e.className=v;
+else if(k===“style”&&typeof v===“object”)Object.assign(e.style,v);
+else if(k.startsWith(“on”))e.addEventListener(k.slice(2).toLowerCase(),v);
+else e.setAttribute(k,v);
+});
+children.flat(Infinity).forEach(c=>{
+if(c==null||c===false)return;
+e.appendChild(typeof c===“string”||typeof c===“number”?document.createTextNode(c):c);
+});
+return e;
 }
 
 function CardImg(card,size){
-  const w=size==="small"?90:size==="large"?180:140;
-  const wrap=el("div",{class:"card-wrap",style:{width:w+"px",aspectRatio:"1/1.79",transform:card.isReversed?"rotate(180deg)":"none"}});
-  const ph=el("div",{class:"placeholder"},el("span",{style:{fontSize:"20px",color:"#c9a84c"}},"✦"));
-  wrap.appendChild(ph);
-  const img=el("img",{alt:card.name,style:{opacity:"0"}});
-  img.onload=()=>{img.style.opacity="1";ph.style.display="none";
-    wrap.appendChild(el("div",{class:"card-overlay"},el("span",{style:{fontSize:"9px",letterSpacing:"2px",color:"rgba(230,215,180,.85)"}},card.nameEn)));
-  };
-  img.onerror=()=>{ph.innerHTML="";ph.appendChild(el("span",{style:{fontSize:"28px",color:"#c9a84c"}},"✦"));ph.appendChild(el("span",{style:{fontSize:"9px",color:"#c9a84c"}},card.nameEn));};
-  setTimeout(()=>{if(img.style.opacity==="0"){img.style.opacity="1";ph.style.display="none";}},5000);
-  img.src=card.image;
-  wrap.appendChild(img);
-  return wrap;
+const w=size===“small”?90:size===“large”?180:140;
+const wrap=el(“div”,{class:“card-wrap”,style:{width:w+“px”,aspectRatio:“1/1.79”,transform:card.isReversed?“rotate(180deg)”:“none”}});
+const ph=el(“div”,{class:“placeholder”},el(“span”,{style:{fontSize:“20px”,color:”#c9a84c”}},“✦”));
+wrap.appendChild(ph);
+const img=el(“img”,{alt:card.name,style:{opacity:“0”}});
+img.onload=()=>{img.style.opacity=“1”;ph.style.display=“none”;
+wrap.appendChild(el(“div”,{class:“card-overlay”},el(“span”,{style:{fontSize:“9px”,letterSpacing:“2px”,color:“rgba(230,215,180,.85)”}},card.nameEn)));
+};
+img.onerror=()=>{ph.innerHTML=””;ph.appendChild(el(“span”,{style:{fontSize:“28px”,color:”#c9a84c”}},“✦”));ph.appendChild(el(“span”,{style:{fontSize:“9px”,color:”#c9a84c”}},card.nameEn));};
+setTimeout(()=>{if(img.style.opacity===“0”){img.style.opacity=“1”;ph.style.display=“none”;}},5000);
+img.src=card.image;
+wrap.appendChild(img);
+return wrap;
 }
 
 function CardReveal(card,position,total){
-  const posLabels=["過去","現在","未来"];
-  const text=card.isReversed?(REVERSED_TEXTS[card.id]||""):card.positive;
-  const div=el("div",{style:{opacity:"0",transition:"opacity .6s"}});
-  setTimeout(()=>div.style.opacity="1",100);
-  if(total===3)div.appendChild(el("div",{style:{textAlign:"center",marginBottom:"10px"}},
-    el("span",{style:{fontSize:"9px",letterSpacing:"3px",color:"#9b7e4a",border:"1px solid rgba(201,168,76,.3)",padding:"3px 10px",borderRadius:"20px"}},posLabels[position])));
-  div.appendChild(el("div",{style:{display:"flex",justifyContent:"center",marginBottom:"16px"}},CardImg(card,total===1?"large":"normal")));
-  div.appendChild(el("div",{style:{display:"flex",justifyContent:"center",marginBottom:"12px"}},
-    el("span",{class:"pos-tag",style:{background:card.isReversed?"rgba(120,40,140,.2)":"rgba(40,100,60,.2)",border:"1px solid "+(card.isReversed?"rgba(180,80,200,.4)":"rgba(80,160,80,.4)"),color:card.isReversed?"#c890e8":"#90d890"}},
-      card.isReversed?"逆位置":"正位置")));
-  div.appendChild(el("div",{class:"analysis"},
-    el("div",{style:{fontFamily:"Cormorant Garamond,serif",fontSize:"8px",letterSpacing:"5px",color:"#9b7e4a",textAlign:"center",marginBottom:"10px"}},card.isReversed?"INNER MESSAGE":"POSITIVE ANALYSIS"),
-    el("div",{style:{fontFamily:"Cormorant Garamond,serif",fontSize:"17px",fontWeight:"300",color:"#c9a84c",textAlign:"center",marginBottom:"10px"}},card.name+" · "+card.nameEn),
-    el("p",{style:{fontSize:"11px",color:"#a09080",lineHeight:"2.1"}},text)));
-  return div;
+const posLabels=[“過去”,“現在”,“未来”];
+const text=card.isReversed?(REVERSED_TEXTS[card.id]||””):card.positive;
+const div=el(“div”,{style:{opacity:“0”,transition:“opacity .6s”}});
+setTimeout(()=>div.style.opacity=“1”,100);
+if(total===3)div.appendChild(el(“div”,{style:{textAlign:“center”,marginBottom:“10px”}},
+el(“span”,{style:{fontSize:“9px”,letterSpacing:“3px”,color:”#9b7e4a”,border:“1px solid rgba(201,168,76,.3)”,padding:“3px 10px”,borderRadius:“20px”}},posLabels[position])));
+div.appendChild(el(“div”,{style:{display:“flex”,justifyContent:“center”,marginBottom:“16px”}},CardImg(card,total===1?“large”:“normal”)));
+div.appendChild(el(“div”,{style:{display:“flex”,justifyContent:“center”,marginBottom:“12px”}},
+el(“span”,{class:“pos-tag”,style:{background:card.isReversed?“rgba(120,40,140,.2)”:“rgba(40,100,60,.2)”,border:“1px solid “+(card.isReversed?“rgba(180,80,200,.4)”:“rgba(80,160,80,.4)”),color:card.isReversed?”#c890e8”:”#90d890”}},
+card.isReversed?“逆位置”:“正位置”)));
+div.appendChild(el(“div”,{class:“analysis”},
+el(“div”,{style:{fontFamily:“Cormorant Garamond,serif”,fontSize:“8px”,letterSpacing:“5px”,color:”#9b7e4a”,textAlign:“center”,marginBottom:“10px”}},card.isReversed?“INNER MESSAGE”:“POSITIVE ANALYSIS”),
+el(“div”,{style:{fontFamily:“Cormorant Garamond,serif”,fontSize:“17px”,fontWeight:“300”,color:”#c9a84c”,textAlign:“center”,marginBottom:“10px”}},card.name+” · “+card.nameEn),
+el(“p”,{style:{fontSize:“11px”,color:”#a09080”,lineHeight:“2.1”}},text)));
+return div;
 }
 
 function ThreeSummary(cards){
-  const d=el("div",null);
-  const row=el("div",{style:{display:"flex",justifyContent:"center",gap:"12px",marginBottom:"20px"}});
-  const labs=["過去","現在","未来"];
-  cards.forEach((c,i)=>{
-    const col=el("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",gap:"6px"}});
-    col.appendChild(el("span",{style:{fontSize:"8px",letterSpacing:"2px",color:"#9b7e4a"}},labs[i]));
-    col.appendChild(CardImg(c,"small"));
-    col.appendChild(el("span",{style:{fontSize:"7px",color:c.isReversed?"#c890e8":"#90d890",border:"1px solid "+(c.isReversed?"rgba(180,80,200,.3)":"rgba(80,160,80,.3)"),padding:"2px 6px",borderRadius:"10px"}},c.isReversed?"逆":"正"));
-    row.appendChild(col);
-  });
-  d.appendChild(row);
-  const box=el("div",{class:"analysis"});
-  box.appendChild(el("div",{style:{fontFamily:"Cormorant Garamond,serif",fontSize:"8px",letterSpacing:"5px",color:"#9b7e4a",textAlign:"center",marginBottom:"12px"}},"3枚の総合メッセージ"));
-  cards.forEach((c,i)=>{
-    const item=el("div",{style:{marginBottom:"12px"}});
-    item.appendChild(el("div",{style:{fontSize:"10px",color:"#c9a84c",marginBottom:"4px"}},labs[i]+" · "+c.name+(c.isReversed?"（逆）":"")));
-    item.appendChild(el("p",{style:{fontSize:"11px",color:"#a09080",lineHeight:"2"}},c.isReversed?(REVERSED_TEXTS[c.id]||""):c.positive));
-    box.appendChild(item);
-  });
-  d.appendChild(box);
-  return d;
+const d=el(“div”,null);
+const row=el(“div”,{style:{display:“flex”,justifyContent:“center”,gap:“12px”,marginBottom:“20px”}});
+const labs=[“過去”,“現在”,“未来”];
+cards.forEach((c,i)=>{
+const col=el(“div”,{style:{display:“flex”,flexDirection:“column”,alignItems:“center”,gap:“6px”}});
+col.appendChild(el(“span”,{style:{fontSize:“8px”,letterSpacing:“2px”,color:”#9b7e4a”}},labs[i]));
+col.appendChild(CardImg(c,“small”));
+col.appendChild(el(“span”,{style:{fontSize:“7px”,color:c.isReversed?”#c890e8”:”#90d890”,border:“1px solid “+(c.isReversed?“rgba(180,80,200,.3)”:“rgba(80,160,80,.3)”),padding:“2px 6px”,borderRadius:“10px”}},c.isReversed?“逆”:“正”));
+row.appendChild(col);
+});
+d.appendChild(row);
+const box=el(“div”,{class:“analysis”});
+box.appendChild(el(“div”,{style:{fontFamily:“Cormorant Garamond,serif”,fontSize:“8px”,letterSpacing:“5px”,color:”#9b7e4a”,textAlign:“center”,marginBottom:“12px”}},“3枚の総合メッセージ”));
+cards.forEach((c,i)=>{
+const item=el(“div”,{style:{marginBottom:“12px”}});
+item.appendChild(el(“div”,{style:{fontSize:“10px”,color:”#c9a84c”,marginBottom:“4px”}},labs[i]+” · “+c.name+(c.isReversed?”（逆）”:””)));
+item.appendChild(el(“p”,{style:{fontSize:“11px”,color:”#a09080”,lineHeight:“2”}},c.isReversed?(REVERSED_TEXTS[c.id]||””):c.positive));
+box.appendChild(item);
+});
+d.appendChild(box);
+return d;
 }
 
 function StepDots(){
-  const steps=state.mode===3?["mode","select","card1","card2","card3","finalize"]:["mode","select","interpretation","finalize"];
-  const labels=state.mode===3?["選択","引く","1枚目","2枚目","3枚目","まとめ"]:["選択","引く","読む","相談"];
-  const ci=steps.indexOf(state.step);
-  const row=el("div",{class:"step-row"});
-  steps.forEach((s,i)=>{
-    const active=i===ci,done=i<ci;
-    const col=el("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",gap:"4px"}});
-    col.appendChild(el("div",{class:"sdot",style:{border:"1px solid "+(active||done?"#c9a84c":"rgba(201,168,76,.18)"),background:active?"rgba(201,168,76,.18)":done?"rgba(201,168,76,.08)":"transparent",color:active||done?"#c9a84c":"#2e2638"}},done?"✓":i+1));
-    col.appendChild(el("span",{style:{fontSize:"7px",color:active?"#c9a84c":"#2e2638",letterSpacing:"1px"}},labels[i]));
-    row.appendChild(col);
-    if(i<steps.length-1)row.appendChild(el("div",{class:"sline",style:{background:done?"rgba(201,168,76,.38)":"rgba(201,168,76,.1)"}}));
-  });
-  return row;
+const steps=state.mode===3?[“mode”,“select”,“card1”,“card2”,“card3”,“finalize”]:[“mode”,“select”,“interpretation”,“finalize”];
+const labels=state.mode===3?[“選択”,“引く”,“1枚目”,“2枚目”,“3枚目”,“まとめ”]:[“選択”,“引く”,“読む”,“相談”];
+const ci=steps.indexOf(state.step);
+const row=el(“div”,{class:“step-row”});
+steps.forEach((s,i)=>{
+const active=i===ci,done=i<ci;
+const col=el(“div”,{style:{display:“flex”,flexDirection:“column”,alignItems:“center”,gap:“4px”}});
+col.appendChild(el(“div”,{class:“sdot”,style:{border:“1px solid “+(active||done?”#c9a84c”:“rgba(201,168,76,.18)”),background:active?“rgba(201,168,76,.18)”:done?“rgba(201,168,76,.08)”:“transparent”,color:active||done?”#c9a84c”:”#2e2638”}},done?“✓”:i+1));
+col.appendChild(el(“span”,{style:{fontSize:“7px”,color:active?”#c9a84c”:”#2e2638”,letterSpacing:“1px”}},labels[i]));
+row.appendChild(col);
+if(i<steps.length-1)row.appendChild(el(“div”,{class:“sline”,style:{background:done?“rgba(201,168,76,.38)”:“rgba(201,168,76,.1)”}}));
+});
+return row;
 }
 
 function render(){
-  const app=document.getElementById("app");
-  app.innerHTML="";
-  const starDiv=el("div",{style:{position:"fixed",inset:"0",pointerEvents:"none",zIndex:"0"}});
-  stars.forEach(s=>starDiv.appendChild(el("span",{style:{position:"absolute",left:s.x,top:s.y,width:s.size+"px",height:s.size+"px",borderRadius:"50%",background:"#fff",animation:"twinkle "+s.dur+"s "+s.delay+"s ease-in-out infinite alternate"}})));
-  app.appendChild(starDiv);
+const app=document.getElementById(“app”);
+app.innerHTML=””;
+const starDiv=el(“div”,{style:{position:“fixed”,inset:“0”,pointerEvents:“none”,zIndex:“0”}});
+stars.forEach(s=>starDiv.appendChild(el(“span”,{style:{position:“absolute”,left:s.x,top:s.y,width:s.size+“px”,height:s.size+“px”,borderRadius:“50%”,background:”#fff”,animation:“twinkle “+s.dur+“s “+s.delay+“s ease-in-out infinite alternate”}})));
+app.appendChild(starDiv);
 
-  const main=el("div",{class:"app"});
-  const container=el("div",{class:"container"});
+const main=el(“div”,{class:“app”});
+const container=el(“div”,{class:“container”});
 
-  container.appendChild(el("header",{class:"header"},
-    el("div",{class:"header-eye"},"✦ Logical Tarot ✦"),
-    el("h1",{class:"header-ttl"},"AI ",el("em",null,"Tarot")),
-    el("div",{class:"header-rule"})
-  ));
+container.appendChild(el(“header”,{class:“header”},
+el(“div”,{class:“header-eye”},“✦ Logical Tarot ✦”),
+el(“h1”,{class:“header-ttl”},“AI “,el(“em”,null,“Tarot”)),
+el(“div”,{class:“header-rule”})
+));
 
-  if(state.mode)container.appendChild(StepDots());
+if(state.mode)container.appendChild(StepDots());
 
-  if(state.step==="mode"){
-    const panel=el("div",{class:"panel"});
-    panel.appendChild(el("p",{style:{textAlign:"center",fontFamily:"Cormorant Garamond,serif",fontStyle:"italic",fontSize:"14px",color:"#9b7e4a",marginBottom:"24px",lineHeight:"1.8"}},"「今、ここ」の直感を言語化しませんか？"));
-    const grid=el("div",{class:"mode-grid"});
-    const b1=el("button",{class:"mode-btn",onclick:()=>setState({mode:1,step:"select"})},el("span",{class:"mode-num"},"I"),el("span",{class:"mode-label"},"一枚引き"),el("span",{class:"mode-desc"},"今必要なメッセージ"));
-    const b3=el("button",{class:"mode-btn",onclick:()=>setState({mode:3,step:"select"})},el("span",{class:"mode-num"},"III"),el("span",{class:"mode-label"},"三枚引き"),el("span",{class:"mode-desc"},"過去・現在・未来"));
-    grid.appendChild(b1);grid.appendChild(b3);
-    panel.appendChild(grid);
-    container.appendChild(panel);
-  }
+if(state.step===“mode”){
+const panel=el(“div”,{class:“panel”});
+panel.appendChild(el(“p”,{style:{textAlign:“center”,fontFamily:“Cormorant Garamond,serif”,fontStyle:“italic”,fontSize:“14px”,color:”#9b7e4a”,marginBottom:“24px”,lineHeight:“1.8”}},”「今、ここ」の直感を言語化しませんか？”));
+const grid=el(“div”,{class:“mode-grid”});
+const b1=el(“button”,{class:“mode-btn”,onclick:()=>setState({mode:1,step:“select”})},el(“span”,{class:“mode-num”},“I”),el(“span”,{class:“mode-label”},“一枚引き”),el(“span”,{class:“mode-desc”},“今必要なメッセージ”));
+const b3=el(“button”,{class:“mode-btn”,onclick:()=>setState({mode:3,step:“select”})},el(“span”,{class:“mode-num”},“III”),el(“span”,{class:“mode-label”},“三枚引き”),el(“span”,{class:“mode-desc”},“過去・現在・未来”));
+grid.appendChild(b1);grid.appendChild(b3);
+panel.appendChild(grid);
+container.appendChild(panel);
+}
 
-  else if(state.step==="select"){
-    const deck=shuffle(CARDS.map((_,i)=>i));
-    const panel=el("div",{class:"panel"});
-    let selected=[];
-    const countEl=el("p",{style:{textAlign:"center",fontSize:"11px",color:"#9b7e4a",letterSpacing:"2px",marginBottom:"20px"}},"0/"+state.mode+"枚 カードを選んでください");
-    const grid=el("div",{class:"card-grid"});
-    deck.forEach((cardIdx,i)=>{
-      const cell=el("div",{class:"cell",style:{background:"linear-gradient(135deg,#1a0f3a,#0f0a24)",border:"1px solid rgba(201,168,76,.15)",fontSize:"10px",color:"rgba(201,168,76,.3)"}},"✦");
-      cell.addEventListener("click",()=>{
-        if(selected.includes(i)||selected.length>=state.mode)return;
-        selected.push(i);
-        cell.style.background="linear-gradient(135deg,#c9a84c22,#c9a84c44)";
-        cell.style.border="1.5px solid #c9a84c";
-        cell.style.color="#c9a84c";
-        cell.style.fontSize="14px";
-        cell.textContent=selected.length;
-        countEl.textContent=selected.length+"/"+state.mode+"枚 カードを選んでください";
-        if(selected.length===state.mode){
-          setTimeout(()=>{
-            const drawn=selected.map(j=>({...CARDS[deck[j]],isReversed:Math.random()<0.30}));
-            setState({drawn,idx:0,step:state.mode===1?"interpretation":"card1"});
-          },600);
-        }
-      });
-      grid.appendChild(cell);
-    });
-    panel.appendChild(countEl);panel.appendChild(grid);
-    panel.appendChild(el("p",{style:{textAlign:"center",fontSize:"9px",color:"#3a3040"}},"タップして選択"));
-    container.appendChild(panel);
-  }
+else if(state.step===“select”){
+const deck=shuffle(CARDS.map((_,i)=>i));
+const panel=el(“div”,{class:“panel”});
+let selected=[];
+const countEl=el(“p”,{style:{textAlign:“center”,fontSize:“11px”,color:”#9b7e4a”,letterSpacing:“2px”,marginBottom:“20px”}},“0/”+state.mode+“枚 カードを選んでください”);
+const grid=el(“div”,{class:“card-grid”});
+deck.forEach((cardIdx,i)=>{
+const cell=el(“div”,{class:“cell”,style:{background:“linear-gradient(135deg,#1a0f3a,#0f0a24)”,border:“1px solid rgba(201,168,76,.15)”,fontSize:“10px”,color:“rgba(201,168,76,.3)”}},“✦”);
+cell.addEventListener(“click”,()=>{
+if(selected.includes(i)||selected.length>=state.mode)return;
+selected.push(i);
+cell.style.background=“linear-gradient(135deg,#c9a84c22,#c9a84c44)”;
+cell.style.border=“1.5px solid #c9a84c”;
+cell.style.color=”#c9a84c”;
+cell.style.fontSize=“14px”;
+cell.textContent=selected.length;
+countEl.textContent=selected.length+”/”+state.mode+“枚 カードを選んでください”;
+if(selected.length===state.mode){
+setTimeout(()=>{
+const drawn=selected.map(j=>({…CARDS[deck[j]],isReversed:Math.random()<0.30}));
+setState({drawn,idx:0,step:state.mode===1?“interpretation”:“card1”});
+},600);
+}
+});
+grid.appendChild(cell);
+});
+panel.appendChild(countEl);panel.appendChild(grid);
+panel.appendChild(el(“p”,{style:{textAlign:“center”,fontSize:“9px”,color:”#3a3040”}},“タップして選択”));
+container.appendChild(panel);
+}
 
-  else if(["interpretation","card1","card2","card3"].includes(state.step)){
-    const cardIdx={"interpretation":0,"card1":0,"card2":1,"card3":2}[state.step];
-    const card=state.drawn[cardIdx];
-    const total=state.mode;
-    const panel=el("div",{class:"panel"});
-    panel.appendChild(CardReveal(card,cardIdx,total));
-    panel.appendChild(el("div",{class:"divider"}));
-    if(state.step==="interpretation"||state.step==="card3"){
-      panel.appendChild(el("p",{style:{fontSize:"10px",color:"#5a5060",marginBottom:"4px"}},"Q. このカードを見て、心当たりがあることは？"));
-      const ta=el("textarea",{class:"ref-ta",placeholder:"気づきを入力..."});
-      ta.value=state.reflection;
-      ta.addEventListener("input",e=>state.reflection=e.target.value);
-      panel.appendChild(ta);
-      panel.appendChild(el("button",{class:"btn-primary",onclick:()=>setState({step:"finalize"})},"分析を完了する"));
-    } else {
-      const nextStep={"card1":"card2","card2":"card3"}[state.step];
-      const nextLabel={"card1":"2枚目を見る →","card2":"3枚目を見る →"}[state.step];
-      panel.appendChild(el("button",{class:"btn-primary",onclick:()=>setState({step:nextStep})},nextLabel));
-    }
-    container.appendChild(panel);
-  }
+else if([“interpretation”,“card1”,“card2”,“card3”].includes(state.step)){
+const cardIdx={“interpretation”:0,“card1”:0,“card2”:1,“card3”:2}[state.step];
+const card=state.drawn[cardIdx];
+const total=state.mode;
+const panel=el(“div”,{class:“panel”});
+panel.appendChild(CardReveal(card,cardIdx,total));
+panel.appendChild(el(“div”,{class:“divider”}));
+if(state.step===“interpretation”||state.step===“card3”){
+panel.appendChild(el(“p”,{style:{fontSize:“10px”,color:”#5a5060”,marginBottom:“4px”}},“Q. このカードを見て、心当たりがあることは？”));
+const ta=el(“textarea”,{class:“ref-ta”,placeholder:“気づきを入力…”});
+ta.value=state.reflection;
+ta.addEventListener(“input”,e=>state.reflection=e.target.value);
+panel.appendChild(ta);
+panel.appendChild(el(“button”,{class:“btn-primary”,onclick:()=>setState({step:“finalize”})},“分析を完了する”));
+} else {
+const nextStep={“card1”:“card2”,“card2”:“card3”}[state.step];
+const nextLabel={“card1”:“2枚目を見る →”,“card2”:“3枚目を見る →”}[state.step];
+panel.appendChild(el(“button”,{class:“btn-primary”,onclick:()=>setState({step:nextStep})},nextLabel));
+}
+container.appendChild(panel);
+}
 
-  else if(state.step==="finalize"){
-    const panel=el("div",{class:"panel"});
-    if(state.mode===3){panel.appendChild(ThreeSummary(state.drawn));panel.appendChild(el("div",{class:"divider"}));}
-    panel.appendChild(el("div",{style:{textAlign:"center",marginBottom:"20px"}},
-      el("span",{style:{fontSize:"36px",color:"#c9a84c",display:"block",marginBottom:"14px"}},"✦"),
-      el("h3",{style:{fontFamily:"Cormorant Garamond,serif",fontSize:"22px",fontWeight:"300",fontStyle:"italic",color:"#e8dcc8",marginBottom:"8px"}},"前向きな兆しを現実に。"),
-      el("p",{style:{fontSize:"11px",color:"#5a4a62",lineHeight:"2.2",marginBottom:"24px",padding:"0 8px"}},"素晴らしい気づきです。プロと一緒に具体的なアクションプランを作りましょう。")
-    ));
-    panel.appendChild(el("p",{style:{fontSize:"10px",color:"#5a5060",marginBottom:"4px"}},state.mode===1?"Q. このカードを見て、心当たりがあることは？":"Q. 3枚を通じて、気づいたことは？"));
-    const ta=el("textarea",{class:"ref-ta",placeholder:"気づきを入力..."});
-    ta.value=state.reflection;
-    ta.addEventListener("input",e=>state.reflection=e.target.value);
-    panel.appendChild(ta);
-    panel.appendChild(el("button",{class:"btn-line",onclick:()=>{
-      const names=state.drawn.map(c=>c.name+(c.isReversed?"（逆）":"")).join(" / ");
-      const text="【AIタロット鑑定結果】
-カード："+names+"
-気づき："+ta.value+"
-詳しく相談したいです。";
-      navigator.clipboard.writeText(text).catch(()=>{});
-      window.open(LINE_URL,"_blank");
-    }},"公式LINEで相談を開始"));
-    panel.appendChild(el("p",{style:{fontSize:"9px",color:"#2a2232",textAlign:"center",lineHeight:"1.8",marginTop:"10px"}},"※ボタンを押すと結果がコピーされます。"));
-    panel.appendChild(el("button",{class:"btn-ghost",onclick:()=>setState({step:"mode",mode:null,drawn:[],idx:0,reflection:""})},"↩ 最初に戻る"));
-    container.appendChild(panel);
-  }
+else if(state.step===“finalize”){
+const panel=el(“div”,{class:“panel”});
+if(state.mode===3){panel.appendChild(ThreeSummary(state.drawn));panel.appendChild(el(“div”,{class:“divider”}));}
+panel.appendChild(el(“div”,{style:{textAlign:“center”,marginBottom:“20px”}},
+el(“span”,{style:{fontSize:“36px”,color:”#c9a84c”,display:“block”,marginBottom:“14px”}},“✦”),
+el(“h3”,{style:{fontFamily:“Cormorant Garamond,serif”,fontSize:“22px”,fontWeight:“300”,fontStyle:“italic”,color:”#e8dcc8”,marginBottom:“8px”}},“前向きな兆しを現実に。”),
+el(“p”,{style:{fontSize:“11px”,color:”#5a4a62”,lineHeight:“2.2”,marginBottom:“24px”,padding:“0 8px”}},“素晴らしい気づきです。プロと一緒に具体的なアクションプランを作りましょう。”)
+));
+panel.appendChild(el(“p”,{style:{fontSize:“10px”,color:”#5a5060”,marginBottom:“4px”}},state.mode===1?“Q. このカードを見て、心当たりがあることは？”:“Q. 3枚を通じて、気づいたことは？”));
+const ta=el(“textarea”,{class:“ref-ta”,placeholder:“気づきを入力…”});
+ta.value=state.reflection;
+ta.addEventListener(“input”,e=>state.reflection=e.target.value);
+panel.appendChild(ta);
+panel.appendChild(el(“button”,{class:“btn-line”,onclick:()=>{
+const names=state.drawn.map(c=>c.name+(c.isReversed?”（逆）”:””)).join(” / “);
+const text=”【AIタロット鑑定結果】
+カード：”+names+”
+気づき：”+ta.value+”
+詳しく相談したいです。”;
+navigator.clipboard.writeText(text).catch(()=>{});
+window.open(LINE_URL,”_blank”);
+}},“公式LINEで相談を開始”));
+panel.appendChild(el(“p”,{style:{fontSize:“9px”,color:”#2a2232”,textAlign:“center”,lineHeight:“1.8”,marginTop:“10px”}},”※ボタンを押すと結果がコピーされます。”));
+panel.appendChild(el(“button”,{class:“btn-ghost”,onclick:()=>setState({step:“mode”,mode:null,drawn:[],idx:0,reflection:””})},“↩ 最初に戻る”));
+container.appendChild(panel);
+}
 
-  main.appendChild(container);
-  main.appendChild(el("footer",{class:"footer"},"© 2026 LOGICAL TAROT COUNSELING · DAISUKE"));
-  app.appendChild(main);
+main.appendChild(container);
+main.appendChild(el(“footer”,{class:“footer”},“© 2026 LOGICAL TAROT COUNSELING · DAISUKE”));
+app.appendChild(main);
 }
 
 render();
 })();
 </script>
+
 </body>
 </html>
