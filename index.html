@@ -75,9 +75,21 @@
 
   .selection-guide {
     text-align: center; margin-bottom: 20px; color: #e8dcc8; font-size: 15px; font-weight: bold; letter-spacing: 1px; animation: fadeUp 0.4s ease both; min-height: 24px; transition: color 0.5s;
+  }  .spread-area {
+    display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; min-height: 160px; animation: fadeUp 0.6s ease both;
   }
-  .spread-area {
-    display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; min-height: 120px; animation: fadeUp 0.6s ease both;
+  .slot-wrapper {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .slot-label {
+    font-family: 'Cormorant Garamond', serif; font-size: 14px; color: #6a5a72;
+    letter-spacing: 2px; text-align: center; line-height: 1.3; transition: all 0.5s;
+  }
+  .slot-label.active-label {
+    color: #e8dcc8; text-shadow: 0 0 10px rgba(232,220,200,0.8); transform: scale(1.05);
+  }
+  .slot-label-jp {
+    font-family: 'Zen Old Mincho', serif; font-size: 11px; color: #c9a84c; display: block;
   }
   .card-slot {
     width: 80px; height: 120px; border: 2px dashed rgba(201,168,76,0.3); border-radius: 6px; position: relative; transition: all 0.5s;
@@ -85,9 +97,7 @@
   .card-slot.active { border-color: rgba(201,168,76,1); box-shadow: 0 0 15px rgba(201,168,76,0.4) inset; transform: translateY(-5px); }
   .card-slot.filled {
     border-style: solid; border-color: rgba(201,168,76,0.6); background: linear-gradient(135deg, #1d0d42, #3b1d6b); background-image: repeating-linear-gradient(45deg, rgba(201,168,76,0.1) 0, rgba(201,168,76,0.1) 2px, transparent 2px, transparent 6px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); transform: translateY(0);
-  }
-  .slot-label { font-size: 11px; color: #c9a84c; letter-spacing: 2px; position: absolute; bottom: -22px; width: 100%; text-align: center; }
-  
+  }  
   .card-deck { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; animation: fadeUp 0.8s ease both; }
   .card-back {
     width: 40px; height: 65px; background: linear-gradient(135deg, #1d0d42, #3b1d6b); border: 1px solid rgba(201,168,76,0.5); border-radius: 4px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 8px rgba(0,0,0,0.6); background-image: repeating-linear-gradient(45deg, rgba(201,168,76,0.1) 0, rgba(201,168,76,0.1) 2px, transparent 2px, transparent 6px);
@@ -282,18 +292,23 @@ window.startSelection = function(count) {
   }
 
   const panel = document.getElementById("main-panel");
-  
-  let html = `<div class="selection-guide" id="selection-guide"></div>`;
+    let html = `<div class="selection-guide" id="selection-guide"></div>`;
   html += `<div class="spread-area" id="spread-area">`;
-  const labels = count === 3 ? ['過去', '現在', '未来'] : ['鑑定結果'];
-  labels.forEach((label, i) => {
+  const labels = count === 3 ? 
+    [{jp: '過去', en: 'PAST'}, {jp: '現在', en: 'PRESENT'}, {jp: '未来', en: 'FUTURE'}] : 
+    [{jp: '鑑定結果', en: 'RESULT'}];
+    
+  labels.forEach((labelObj, i) => {
+    const num = count === 3 ? ['I', 'II', 'III'][i] + '. ' : '';
     html += `
-      <div class="card-slot" id="slot-${i}">
-        <div class="slot-label">${label}</div>
+      <div class="slot-wrapper">
+        <div class="slot-label" id="label-${i}">${num}${labelObj.en}<span class="slot-label-jp">${labelObj.jp}</span></div>
+        <div class="card-slot" id="slot-${i}"></div>
       </div>
     `;
   });
   html += `</div>`;
+
 
   html += `<div class="card-deck">`;
   for(let i = 0; i < 22; i++) {
@@ -317,14 +332,18 @@ window.updateSelectionUI = function() {
     return;
   }
 
-  for (let i = 0; i < window.requiredCount; i++) {
+    for (let i = 0; i < window.requiredCount; i++) {
     const slot = document.getElementById(`slot-${i}`);
+    const label = document.getElementById(`label-${i}`);
     if (i === currentStep) {
       slot.classList.add("active");
+      label.classList.add("active-label");
     } else {
       slot.classList.remove("active");
+      label.classList.remove("active-label");
     }
   }
+
 
   if (window.requiredCount === 1) {
     guideEl.innerHTML = "直感でカードを <strong>1枚</strong> 選んでください";
