@@ -75,7 +75,8 @@
 
   .selection-guide {
     text-align: center; margin-bottom: 20px; color: #e8dcc8; font-size: 15px; font-weight: bold; letter-spacing: 1px; animation: fadeUp 0.4s ease both; min-height: 24px; transition: color 0.5s;
-  }  .spread-area {
+  }
+  .spread-area {
     display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; min-height: 160px; animation: fadeUp 0.6s ease both;
   }
   .slot-wrapper {
@@ -97,7 +98,8 @@
   .card-slot.active { border-color: rgba(201,168,76,1); box-shadow: 0 0 15px rgba(201,168,76,0.4) inset; transform: translateY(-5px); }
   .card-slot.filled {
     border-style: solid; border-color: rgba(201,168,76,0.6); background: linear-gradient(135deg, #1d0d42, #3b1d6b); background-image: repeating-linear-gradient(45deg, rgba(201,168,76,0.1) 0, rgba(201,168,76,0.1) 2px, transparent 2px, transparent 6px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); transform: translateY(0);
-  }  
+  }
+  
   .card-deck { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; animation: fadeUp 0.8s ease both; }
   .card-back {
     width: 40px; height: 65px; background: linear-gradient(135deg, #1d0d42, #3b1d6b); border: 1px solid rgba(201,168,76,0.5); border-radius: 4px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 8px rgba(0,0,0,0.6); background-image: repeating-linear-gradient(45deg, rgba(201,168,76,0.1) 0, rgba(201,168,76,0.1) 2px, transparent 2px, transparent 6px);
@@ -247,6 +249,7 @@ const CARDS = [
   },
 ];
 
+
 const REVERSED_TEXTS = {
   fool: "準備不足や無謀さへの警告です。今一度、足元を確かめてから踏み出してみましょう。",
   magician: "才能を活かしきれていません。散漫になったエネルギーを一点に集中させましょう。",
@@ -292,7 +295,8 @@ window.startSelection = function(count) {
   }
 
   const panel = document.getElementById("main-panel");
-    let html = `<div class="selection-guide" id="selection-guide"></div>`;
+  
+  let html = `<div class="selection-guide" id="selection-guide"></div>`;
   html += `<div class="spread-area" id="spread-area">`;
   const labels = count === 3 ? 
     [{jp: '過去', en: 'PAST'}, {jp: '現在', en: 'PRESENT'}, {jp: '未来', en: 'FUTURE'}] : 
@@ -308,7 +312,6 @@ window.startSelection = function(count) {
     `;
   });
   html += `</div>`;
-
 
   html += `<div class="card-deck">`;
   for(let i = 0; i < 22; i++) {
@@ -332,18 +335,17 @@ window.updateSelectionUI = function() {
     return;
   }
 
-    for (let i = 0; i < window.requiredCount; i++) {
+  for (let i = 0; i < window.requiredCount; i++) {
     const slot = document.getElementById(`slot-${i}`);
     const label = document.getElementById(`label-${i}`);
     if (i === currentStep) {
       slot.classList.add("active");
-      label.classList.add("active-label");
+      if(label) label.classList.add("active-label");
     } else {
       slot.classList.remove("active");
-      label.classList.remove("active-label");
+      if(label) label.classList.remove("active-label");
     }
   }
-
 
   if (window.requiredCount === 1) {
     guideEl.innerHTML = "直感でカードを <strong>1枚</strong> 選んでください";
@@ -442,5 +444,4 @@ window.sendToLine = function(count) {
 </script>
 
 </body>
-</html>
 </html>
