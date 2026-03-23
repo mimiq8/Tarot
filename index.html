@@ -145,21 +145,29 @@
 
   <div class="panel" id="main-panel">
     <p class="mode-desc">「今の悩みや感情を」言語化しませんか？</p>
-        <div class="btn-wrap">
-      <div style="flex: 1; text-align: center;">
+            <div class="btn-wrap" style="flex-direction: column; gap: 15px;">
+      <div style="text-align: center;">
         <button class="btn-mode" onclick="window.startSelection(1)">
           <span>I</span><span>一枚引き</span>
         </button>
         <p style="font-size: 10px; color: #9b7e4a; margin-top: 8px; line-height: 1.4;">
-          あなたの“今”を<br>読むのに追求
+          あなたの“今”を読むのにおすすめ
         </p>
       </div>
-      <div style="flex: 1; text-align: center;">
+      <div style="text-align: center;">
+        <button class="btn-mode" onclick="window.startSelection(2)">
+          <span>II</span><span>二枚引き</span>
+        </button>
+        <p style="font-size: 10px; color: #9b7e4a; margin-top: 8px; line-height: 1.4;">
+          AかBか、迷っている2つの道の行く末を比較するのに最適
+        </p>
+      </div>
+      <div style="text-align: center;">
         <button class="btn-mode" onclick="window.startSelection(3)">
           <span>III</span><span>三枚引き</span>
         </button>
         <p style="font-size: 10px; color: #9b7e4a; margin-top: 8px; line-height: 1.4;">
-          悩みの過去・現在・未来の<br>流れを読むのにおすすめ
+          悩みの過去・現在・未来の流れを読むのにおすすめ
         </p>
       </div>
     </div>
@@ -308,15 +316,24 @@ const REVERSED_TEXTS = {
 window.requiredCount = 0;
 window.selectedCards = [];
 window.shuffledDeck = [];
-window.selectedCategory = ""; // 新規：選んだカテゴリーを記憶
-window.preMemo = ""; // 新規：引く前の悩みを記憶
+window.selectedCategory = "";
+window.preMemo = "";
+window.choiceA = ""; // 新規：選択肢A
+window.choiceB = ""; // 新規：選択肢B
 
-// ▼ 1. モード選択後、カテゴリー選択画面へ
+// ▼ 1. モード選択
 window.startSelection = function(count) {
   window.requiredCount = count;
-  const panel = document.getElementById("main-panel");
   
-  let html = `<div class="selection-guide">今日はどのお悩みですか？</div>`;
+  // 2枚引き（二者択一）の場合は、専用の入力画面へ直行！
+  if (count === 2) {
+    window.selectedCategory = "二者択一";
+    window.showTwoChoiceInput();
+    return;
+  }
+
+  const panel = document.getElementById("main-panel");
+  let html = `<div class="selection-guide">今日はどの領域をスキャンしますか？</div>`;
   html += `<div class="category-wrap">
     <button class="btn-category" onclick="window.selectCategory('今の仕事、どうなの？')">今の仕事、どうなの？<span>（現状分析・キャリア）</span></button>
     <button class="btn-category" onclick="window.selectCategory('お金との向き合い方を知りたい')">お金との向き合い方を知りたい<span>（豊かさの思考・整理）</span></button>
@@ -324,38 +341,55 @@ window.startSelection = function(count) {
     <button class="btn-category" onclick="window.selectCategory('あなたの知らない強み、気になりませんか？')">あなたの知らない強み、気になりませんか？<span>（自己理解・才能）</span></button>
     <button class="btn-category" onclick="window.selectCategory('とりあえず聞いて！')">とりあえず聞いて！<span>（自由入力・総合）</span></button>
   </div>`;
-  
   panel.innerHTML = html;
 };
 
-// ▼ 2. カテゴリー選択後、悩み入力画面へ
+// ▼ 2-A. 1枚・3枚引き用：カテゴリー選択後
 window.selectCategory = function(category) {
   window.selectedCategory = category;
   const panel = document.getElementById("main-panel");
-  
   let html = `<div class="selection-guide" style="font-size:14px; line-height:1.6; margin-bottom:15px;">
     「${category}」ですね。<br>そのことについて、今頭にあることを少しだけ書き出してみてください。
   </div>`;
   html += `<div class="pre-memo-wrap">
-    <textarea id="pre-memo-input" style="height:100px;" placeholder="言語化することで、カードの精度が上がります。（※書かずに進むこともできます）"></textarea>
+    <textarea id="pre-memo-input" style="height:100px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,168,76,.3); color:#fff; width:100%; padding:15px; border-radius:10px; font-family:inherit; font-size:13px;" placeholder="言語化することで、カードの精度が上がります。（※書かずに進むこともできます）"></textarea>
     <button class="btn-next" onclick="window.proceedToDeck()">直感でカードを引く</button>
   </div>`;
-  
   panel.innerHTML = html;
 };
 
-// ▼ 3. 悩み入力後、いよいよカード展開へ
+// ▼ 2-B. 2枚引き用：A・B入力画面（NEW!）
+window.showTwoChoiceInput = function() {
+  const panel = document.getElementById("main-panel");
+  let html = `<div class="selection-guide" style="font-size:14px; line-height:1.6; margin-bottom:15px;">
+    「二者択一」ですね。<br>迷っている2つの選択肢を書き出してください。
+  </div>`;
+  html += `<div class="pre-memo-wrap" style="display:flex; flex-direction:column; gap:12px;">
+    <input type="text" id="choice-a-input" placeholder="選択肢A（例：今の会社に残る）" style="width:100%; padding:15px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,168,76,.5); color:#fff; border-radius:8px; outline:none; font-family:inherit;">
+    <input type="text" id="choice-b-input" placeholder="選択肢B（例：思い切って転職する）" style="width:100%; padding:15px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,168,76,.5); color:#fff; border-radius:8px; outline:none; font-family:inherit;">
+    <textarea id="pre-memo-input" style="height:60px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,168,76,.3); color:#fff; width:100%; padding:10px; border-radius:8px; font-family:inherit; font-size:12px;" placeholder="その他、率直な思いがあれば（任意）"></textarea>
+    <button class="btn-next" onclick="window.proceedToDeck()">直感でカードを引く</button>
+  </div>`;
+  panel.innerHTML = html;
+};
+
+// ▼ 3. 悩み入力後、カード展開へ
 window.proceedToDeck = function() {
   const memoInput = document.getElementById("pre-memo-input");
   window.preMemo = memoInput ? memoInput.value : "";
+  
+  if (window.requiredCount === 2) {
+    const aInput = document.getElementById("choice-a-input");
+    const bInput = document.getElementById("choice-b-input");
+    window.choiceA = aInput && aInput.value ? aInput.value : "選択肢A";
+    window.choiceB = bInput && bInput.value ? bInput.value : "選択肢B";
+  }
   
   if (!CARDS || CARDS.length === 0) {
     alert("エラー：カードデータが設定されていません。");
     return;
   }
-  
   window.selectedCards = [];
-  
   window.shuffledDeck = [...CARDS];
   for (let i = window.shuffledDeck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -363,11 +397,14 @@ window.proceedToDeck = function() {
   }
 
   const panel = document.getElementById("main-panel");
-  
   let html = `<div class="selection-guide" id="selection-guide"></div>`;
   html += `<div class="spread-area" id="spread-area">`;
+  
+  // 枠の上のラベルをモードごとに切り替え
   const labels = window.requiredCount === 3 ? 
     [{jp: '過去', en: 'PAST'}, {jp: '現在', en: 'PRESENT'}, {jp: '未来', en: 'FUTURE'}] : 
+    window.requiredCount === 2 ?
+    [{jp: '選択肢A', en: 'OPTION A'}, {jp: '選択肢B', en: 'OPTION B'}] :
     [{jp: '鑑定結果', en: 'RESULT'}];
     
   labels.forEach((labelObj, i) => {
@@ -395,7 +432,6 @@ window.proceedToDeck = function() {
 window.updateSelectionUI = function() {
   const currentStep = window.selectedCards.length;
   const guideEl = document.getElementById("selection-guide");
-  
   document.body.className = "";
   
   if (currentStep === window.requiredCount) {
@@ -419,17 +455,13 @@ window.updateSelectionUI = function() {
   if (window.requiredCount === 1) {
     guideEl.innerHTML = "直感でカードを <strong>1枚</strong> 選んでください";
     document.body.classList.add("theme-past");
-  } else {
-    if (currentStep === 0) {
-      guideEl.innerHTML = "【1枚目：過去】を決めるカードを選んでください";
-      document.body.classList.add("theme-past");
-    } else if (currentStep === 1) {
-      guideEl.innerHTML = "【2枚目：現在】の状態を表すカードを選んでください";
-      document.body.classList.add("theme-present");
-    } else if (currentStep === 2) {
-      guideEl.innerHTML = "【3枚目：未来】の可能性を示すカードを選んでください";
-      document.body.classList.add("theme-future");
-    }
+  } else if (window.requiredCount === 3) {
+    if (currentStep === 0) { guideEl.innerHTML = "【1枚目：過去】を決めるカードを選んでください"; document.body.classList.add("theme-past"); }
+    else if (currentStep === 1) { guideEl.innerHTML = "【2枚目：現在】の状態を表すカードを選んでください"; document.body.classList.add("theme-present"); }
+    else if (currentStep === 2) { guideEl.innerHTML = "【3枚目：未来】の可能性を示すカードを選んでください"; document.body.classList.add("theme-future"); }
+  } else if (window.requiredCount === 2) {
+    if (currentStep === 0) { guideEl.innerHTML = `【選択肢A】 <strong>${window.choiceA}</strong> の行く末を示すカードを引いてください`; document.body.classList.add("theme-past"); }
+    else if (currentStep === 1) { guideEl.innerHTML = `【選択肢B】 <strong>${window.choiceB}</strong> の行く末を示すカードを引いてください`; document.body.classList.add("theme-present"); }
   }
 };
 
@@ -437,21 +469,15 @@ window.updateSelectionUI = function() {
 window.selectCard = function(index) {
   const cardEl = document.getElementById(`card-${index}`);
   if (cardEl.classList.contains('selected')) return;
-  
   const currentStep = window.selectedCards.length;
   if (currentStep < window.requiredCount) {
     cardEl.classList.add('selected');
-    
     const slot = document.getElementById(`slot-${currentStep}`);
     slot.classList.add('filled');
-    
     window.selectedCards.push(window.shuffledDeck[index]);
     window.updateSelectionUI();
-    
     if (window.selectedCards.length === window.requiredCount) {
-      setTimeout(() => {
-        window.showResults();
-      }, 1200);
+      setTimeout(() => { window.showResults(); }, 1200);
     }
   }
 };
@@ -465,7 +491,10 @@ window.showResults = function() {
 
   window.selectedCards.forEach((c, i) => {
     const isReversed = Math.random() < 0.3;
-    const label = window.requiredCount === 3 ? ['過去', '現在', '未来'][i] : '鑑定結果';
+    let label = '鑑定結果';
+    if (window.requiredCount === 3) label = ['過去', '現在', '未来'][i];
+    if (window.requiredCount === 2) label = i === 0 ? `A: ${window.choiceA}` : `B: ${window.choiceB}`;
+    
     const statusClass = isReversed ? "status-rev" : "status-up";
     const statusText = isReversed ? "逆位置" : "正位置";
     const imgClass = isReversed ? "card-img reversed" : "card-img";
@@ -474,9 +503,7 @@ window.showResults = function() {
     html += `
       <div class="result-card">
         <span class="card-label">${label}</span>
-        <div class="card-img-wrap">
-          <img src="${c.image}" class="${imgClass}" alt="${c.name}">
-        </div>
+        <div class="card-img-wrap"><img src="${c.image}" class="${imgClass}" alt="${c.name}"></div>
         <div class="card-status ${statusClass}">${statusText}</div>
         <h2 class="card-name">${c.name} <span style="font-size:12px;color:#9b7e4a;">${c.nameEn}</span></h2>
         <p class="card-text">${msg}</p>
@@ -487,34 +514,48 @@ window.showResults = function() {
 
   html += `
     <div class="action-area">
-      <textarea id="user-memo" placeholder="Q. この結果を見て、心当たりがあることは何ですか？"></textarea>
-      <button class="btn-line" onclick="window.sendToLine(${window.requiredCount})">
-        公式LINEで相談を開始
-      </button>
+      <textarea id="user-memo" placeholder="Q. この結果を見て、心当たりがあることは何ですか？" style="height:90px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,168,76,.3); color:#fff; width:100%; padding:15px; border-radius:10px; font-family:inherit; font-size:13px;"></textarea>
+      <button class="btn-line" onclick="window.sendToLine(${window.requiredCount})">公式LINEで相談を開始</button>
       <p style="font-size:10px; color:#6a5a72; text-align:center; margin-top:8px;">※結果がコピーされます。LINEにそのまま貼り付けてください。</p>
-      <button class="btn-reset" onclick="location.reload()">最初に戻る</button>
+      <button class=\"btn-reset\" onclick=\"location.reload()\">最初に戻る</button>
     </div>
   `;
-
   panel.innerHTML = html;
 };
 
-// ▼ 7. LINE送信（事前の悩みとカテゴリーも追加！）
+// ▼ 7. LINE送信（二者択一専用のフォーマットも完備！）
 window.sendToLine = function(count) {
   const postMemo = document.getElementById("user-memo").value || "特になし";
-  const cardNames = window.currentDrawnCards.join(" / ");
-  const modeText = count === 1 ? "1枚引き" : "3枚引き";
   const preMemoText = window.preMemo ? window.preMemo : "特になし";
+  let text = "";
   
-  const text = `【AIタロット鑑定結果】
+  if (count === 2) {
+    text = `【AIタロット鑑定結果】
+モード：二者択一（2枚引き）
+事前の思い：${preMemoText}
+
+[選択肢A] ${window.choiceA}
+▶ ${window.currentDrawnCards[0]}
+
+[選択肢B] ${window.choiceB}
+▶ ${window.currentDrawnCards[1]}
+
+私の気づき：${postMemo}
+
+この選択について詳しく相談したいです。`;
+  } else {
+    const cardNames = window.currentDrawnCards.join(" / ");
+    const modeText = count === 1 ? "1枚引き" : "3枚引き";
+    text = `【AIタロット鑑定結果】
 モード：${modeText}
 テーマ：${window.selectedCategory}
 事前の思い：${preMemoText}
 
 カード：${cardNames}
-結果を受けての気づき：${postMemo}
+私の気づき：${postMemo}
 
 これについて詳しく相談したいです。`;
+  }
   
   navigator.clipboard.writeText(text).then(() => {
     window.open('https://line.me/R/ti/p/@796tkxeg', '_blank');
