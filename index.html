@@ -82,10 +82,14 @@
   .slot-wrapper {
     display: flex; flex-direction: column; align-items: center; gap: 10px;
   }
-  .slot-label {
+   .slot-label {
     font-family: 'Cormorant Garamond', serif; font-size: 14px; color: #6a5a72;
     letter-spacing: 2px; text-align: center; line-height: 1.3; transition: all 0.5s;
+    /* ↓もし以下の2行が残っていたら、削除するか、このように書き換えてください */
+    position: relative; /* absoluteから変更 */
+    bottom: 0;         /* -22pxから変更 */
   }
+
   .slot-label.active-label {
     color: #e8dcc8; text-shadow: 0 0 10px rgba(232,220,200,0.8); transform: scale(1.05);
   }
@@ -124,15 +128,24 @@
 
   <div class="panel" id="main-panel">
     <p class="mode-desc">「今の悩みや感情を」言語化しませんか？</p>
-    <div class="btn-wrap">
-      <button class="btn-mode" onclick="window.startSelection(1)">
-        <span>I</span><span>一枚引き</span>
-      </button>
-      <button class="btn-mode" onclick="window.startSelection(3)">
-        <span>III</span><span>三枚引き</span>
-      </button>
+        <div class="btn-wrap">
+      <div style="flex: 1; text-align: center;">
+        <button class="btn-mode" onclick="window.startSelection(1)">
+          <span>I</span><span>一枚引き</span>
+        </button>
+        <p style="font-size: 10px; color: #9b7e4a; margin-top: 8px; line-height: 1.4;">
+          あなたの“今”を<br>読むのに追求
+        </p>
+      </div>
+      <div style="flex: 1; text-align: center;">
+        <button class="btn-mode" onclick="window.startSelection(3)">
+          <span>III</span><span>三枚引き</span>
+        </button>
+        <p style="font-size: 10px; color: #9b7e4a; margin-top: 8px; line-height: 1.4;">
+          悩みの過去・現在・未来の<br>流れを読むのにおすすめ
+        </p>
+      </div>
     </div>
-  </div>
 </div>
 
 <script>
