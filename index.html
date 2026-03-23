@@ -39,11 +39,14 @@
     cursor: pointer; transition: all 0.3s; padding: 10px;
     border-radius: 12px; background: rgba(255,255,255,0.02);
   }
-  .mode-row:hover { background: rgba(201,168,76,0.1); transform: translateX(5px); }
+  /* PCでは横に動き、スマホでは押した瞬間に凹むように修正 */
+  @media (hover: hover) { .mode-row:hover { background: rgba(201,168,76,0.1); transform: translateX(5px); } }
+  .mode-row:active { background: rgba(201,168,76,0.2); transform: scale(0.98); }
+  
   .btn-mode-rect {
     width: 60px; height: 60px; min-width: 60px; background: rgba(0,0,0,0.3);
     border: 1px solid rgba(201,168,76,0.4); color: #c9a84c; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center; pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
   }
   .btn-mode-rect span { font-family: 'Cormorant Garamond', serif; font-size: 24px; }
   .mode-info { display: flex; flex-direction: column; justify-content: center; text-align: left; }
@@ -138,18 +141,17 @@
 
   <div class="panel" id="main-panel">
     <p class="mode-desc">「今、ここ」の直感を言語化しませんか？</p>
-    
-    <div class="btn-wrap">
+        <div class="btn-wrap">
       <div class="mode-row" onclick="window.startSelection(1)">
-        <button class="btn-mode-rect"><span>I</span></button>
+        <div class="btn-mode-rect"><span>I</span></div>
         <div class="mode-info">
           <div class="mode-name">一枚引き</div>
-          <div class="mode-text">あなたの"今"を読むのにおすすめ</div>
+          <div class="mode-text">あなたの“今”を読むのにおすすめ</div>
         </div>
       </div>
 
       <div class="mode-row" onclick="window.startSelection(2)">
-        <button class="btn-mode-rect"><span>II</span></button>
+        <div class="btn-mode-rect"><span>II</span></div>
         <div class="mode-info">
           <div class="mode-name">二者択一</div>
           <div class="mode-text">AかBか、迷っている2つの道の行く末を比較</div>
@@ -157,13 +159,14 @@
       </div>
 
       <div class="mode-row" onclick="window.startSelection(3)">
-        <button class="btn-mode-rect"><span>III</span></button>
+        <div class="btn-mode-rect"><span>III</span></div>
         <div class="mode-info">
           <div class="mode-name">三枚引き</div>
           <div class="mode-text">悩みの過去・現在・未来の流れを読むのにおすすめ</div>
         </div>
       </div>
     </div>
+
 
   </div>
 </div>
