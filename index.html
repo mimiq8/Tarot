@@ -130,6 +130,57 @@
   }
   .btn-next:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(201,168,76,0.4); }
   /* ▲▲ ここまで ▲▲ */
+   /* モード選択の横並びレイアウト */
+  .mode-row {
+    display: flex;
+    align-items: center; /* 垂直方向の中央揃え（これで横に並びます） */
+    gap: 15px;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.3s;
+    padding: 10px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.02);
+  }
+  .mode-row:hover {
+    background: rgba(201,168,76,0.1);
+    transform: translateX(5px);
+  }
+  /* 正方形のボタンデザイン */
+  .btn-mode-rect {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(201,168,76,0.4);
+    color: #c9a84c;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* 親のdivでクリックを拾うので無効化 */
+  }
+  .btn-mode-rect span {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+  }
+  .mode-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .mode-name {
+    font-size: 16px;
+    color: #e8dcc8;
+    font-weight: bold;
+    margin-bottom: 2px;
+  }
+  .mode-text {
+    font-size: 11px;
+    color: #9b7e4a;
+    line-height: 1.4;
+  }
+
 </style>
 </head>
 <body class="theme-default">
