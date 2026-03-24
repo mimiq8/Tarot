@@ -349,15 +349,13 @@ window.preMemo = "";
 window.choiceA = "";
 window.choiceB = "";
 
-window.startSelection = function(count) {
+wiwindow.startSelection = function(count) {
   window.requiredCount = count;
 
   // --- 4枚引き（フォーカード）の時のスキップ処理 ---
   if (count === 4) {
-    // カテゴリーを「対人関係」に自動設定
-    window.selectedCategory = "あの人との関係は？（対人関係・心理）";
-    // カテゴリー選択を飛ばして、メモ入力画面へ直行
-    window.showMemoInput(); 
+    // カテゴリー選択を飛ばして、直接メモ入力画面（selectCategory）を呼び出す
+    window.selectCategory("あの人との関係は？（対人関係・心理）"); 
     return;
   }
   // ----------------------------------------------
@@ -385,6 +383,7 @@ window.startSelection = function(count) {
   html += '</div>';
   panel.innerHTML = html;
 };
+
 
 window.selectCategory = function(category) {
   window.selectedCategory = category;
