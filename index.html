@@ -334,7 +334,6 @@ window.showTwoChoiceInput = function() {
   window.shuffledDeck = [...CARDS].sort(() => Math.random() - 0.5);
 
   const panel = document.getElementById("main-panel");
-  
   let html = `<div class="selection-guide" id="selection-guide"></div><div class="spread-area" id="spread-area">`;
   const lbs = window.requiredCount === 3 ? [{jp:'過去',en:'PAST'},{jp:'現在',en:'PRESENT'},{jp:'未来',en:'FUTURE'}] : window.requiredCount === 2 ? [{jp:'選択肢A',en:'OPTION A'},{jp:'選択肢B',en:'OPTION B'}] : [{jp:'鑑定結果',en:'RESULT'}];
   lbs.forEach((l, i) => { 
@@ -346,98 +345,60 @@ window.showTwoChoiceInput = function() {
   panel.innerHTML = html;
 
   const container = document.getElementById("card-container");
-  
-  // 1. 山札として中央に生成（ここでJS側からも中心を強制指定）
   for(let i=0; i<CARDS.length; i++) {
     const card = document.createElement("div");
     card.className = "card-back deck-stacked";
     card.id = `card-${i}`;
     card.style.position = "absolute";
-    card.style.left = "50%"; // ★追加
-    card.style.top = "50%";  // ★追加
-    card.style.transform = "translate(-50%, -50%)"; // ★追加
+    card.style.left = "50%";
+    card.style.top = "50%";
+    card.style.transform = "translate(-50%, -50%)";
     card.onclick = () => window.animateSelectCard(i);
     container.appendChild(card);
   }
 
-  // 2. 0.5秒待ってからバラけさせる（待ち時間を増やして溜めを作る）
   setTimeout(() => {
     for(let i=0; i<CARDS.length; i++) {
       const card = document.getElementById(`card-${i}`);
+      if(!card) continue;
       card.classList.remove("deck-stacked");
-      // 展開後の座標
       const x = (i % 7) * (container.offsetWidth / 7.5); 
-      const y = Math.floor(i / 7) * 70;
+      const y = Math.floor(i / 7) * 75;
       card.style.left = x + "px";
       card.style.top = y + "px";
-      card.style.transform = "none"; // 中央固定を解除
+      card.style.transform = "none";
     }
     window.updateSelectionUI();
   }, 500);
 };
 
-  lbs.forEach((l, i) => { 
-    const n = window.requiredCount === 3 ? ['I','II','III'][i]+'. ' : ''; 
-    html += `<div class="slot-wrapper"><div class="slot-label" id="label-${i}">${n}${l.en}<span class="slot-label-jp">${l.jp}</span></div><div class="card-slot" id="slot-${i}"></div></div>`; 
-  });
-  
-  // カードを並べるコンテナ（高さを確保）
-  html += `</div><div id="card-container" style="position:relative; min-height:350px; width:100%; margin-top:20px;"></div>`;
-  panel.innerHTML = html;
-
-  const container = document.getElementById("card-container");
-  
-  // 1. 山札として中央に生成
-  for(let i=0; i<CARDS.length; i++) {
-    const card = document.createElement("div");
-    card.className = "card-back deck-stacked";
-    card.id = `card-${i}`;
-    card.style.position = "absolute";
-    card.onclick = () => window.animateSelectCard(i);
-    container.appendChild(card);
-  }
-
-  // 2. 0.3秒後に場にバラけさせる演出
-  setTimeout(() => {
-    for(let i=0; i<CARDS.length; i++) {
-      const card = document.getElementById(`card-${i}`);
-      card.classList.remove("deck-stacked");
-      // モバイルで見やすいようにグリッド配置（横7列）
-      const x = (i % 7) * (container.offsetWidth / 7.5); 
-      const y = Math.floor(i / 7) * 70;
-      card.style.left = x + "px";
-      card.style.top = y + "px";
-    }
-    window.updateSelectionUI();
-  }, 300);
-};
-
 window.animateSelectCard = function(idx) {
   if (window.selectedCards.length >= window.requiredCount) return;
-  
   const cardEl = document.getElementById(`card-${idx}`);
-  if (cardEl.classList.contains('selected')) return;
+  if (!cardEl || cardEl.classList.contains('selected')) return;
   
   const step = window.selectedCards.length;
   const slotEl = document.getElementById(`slot-${step}`);
   const slotRect = slotEl.getBoundingClientRect();
   const containerRect = document.getElementById("card-container").getBoundingClientRect();
 
-  // カードをスロットの位置へ飛ばす
   cardEl.classList.add('selected');
   cardEl.style.zIndex = "100";
   cardEl.style.left = (slotRect.left - containerRect.left) + "px";
   cardEl.style.top = (slotRect.top - containerRect.top) + "px";
-  cardEl.style.width = "80px"; // スロットサイズに合わせる
+  cardEl.style.width = "80px";
   cardEl.style.height = "120px";
 
   setTimeout(() => {
     slotEl.classList.add('filled');
     window.selectedCards.push(window.shuffledDeck[idx]);
     window.updateSelectionUI();
-    if (window.selectedCards.length === window.requiredCount) setTimeout(() => window.showResults(), 1200);
+    if (window.selectedCards.length === window.requiredCount) {
+      setTimeout(() => window.showResults(), 1200);
+    }
   }, 600);
 };
+
  
  window.updateSelectionUI = function() {
   const step = window.selectedCards.length, guide = document.getElementById("selection-guide");
