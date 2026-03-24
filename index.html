@@ -323,8 +323,7 @@ window.selectCategory = function(category) {
 window.showTwoChoiceInput = function() {
   const panel = document.getElementById("main-panel");
   panel.innerHTML = `<div class="selection-guide" style="font-size:14px; line-height:1.6; margin-bottom:15px;">「二者択一」ですね。<br>迷っている2つの選択肢を書き出してください。</div><div class="pre-memo-wrap" style="display:flex; flex-direction:column; gap:12px;"><input type="text" id="choice-a-input" placeholder="選択肢A（例：今の会社に残る）" style="width:100%; padding:15px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,168,76,.5); color:#fff; border-radius:8px; outline:none; font-family:inherit;"><input type="text" id="choice-b-input" placeholder="選択肢B（例：思い切って転職する）" style="width:100%; padding:15px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,168,76,.5); color:#fff; border-radius:8px; outline:none; font-family:inherit;"><textarea id="pre-memo-input" style="height:60px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,168,76,.3); color:#fff; width:100%; padding:10px; border-radius:8px; font-family:inherit; font-size:12px;" placeholder="その他、率直な思いがあれば（任意）"></textarea><button class="btn-next" onclick="window.proceedToDeck()">直感でカードを引く</button></div>`;
-};
- window.proceedToDeck = function() {
+};window.proceedToDeck = function() {
   const m = document.getElementById("pre-memo-input"); window.preMemo = m ? m.value : "";
   if (window.requiredCount === 2) {
     const a = document.getElementById("choice-a-input"), b = document.getElementById("choice-b-input");
@@ -336,9 +335,47 @@ window.showTwoChoiceInput = function() {
 
   const panel = document.getElementById("main-panel");
   
-  // スロット（置き場）の準備
   let html = `<div class="selection-guide" id="selection-guide"></div><div class="spread-area" id="spread-area">`;
   const lbs = window.requiredCount === 3 ? [{jp:'過去',en:'PAST'},{jp:'現在',en:'PRESENT'},{jp:'未来',en:'FUTURE'}] : window.requiredCount === 2 ? [{jp:'選択肢A',en:'OPTION A'},{jp:'選択肢B',en:'OPTION B'}] : [{jp:'鑑定結果',en:'RESULT'}];
+  lbs.forEach((l, i) => { 
+    const n = window.requiredCount === 3 ? ['I','II','III'][i]+'. ' : ''; 
+    html += `<div class="slot-wrapper"><div class="slot-label" id="label-${i}">${n}${l.en}<span class="slot-label-jp">${l.jp}</span></div><div class="card-slot" id="slot-${i}"></div></div>`; 
+  });
+  
+  html += `</div><div id="card-container" style="position:relative; min-height:350px; width:100%; margin-top:20px;"></div>`;
+  panel.innerHTML = html;
+
+  const container = document.getElementById("card-container");
+  
+  // 1. 山札として中央に生成（ここでJS側からも中心を強制指定）
+  for(let i=0; i<CARDS.length; i++) {
+    const card = document.createElement("div");
+    card.className = "card-back deck-stacked";
+    card.id = `card-${i}`;
+    card.style.position = "absolute";
+    card.style.left = "50%"; // ★追加
+    card.style.top = "50%";  // ★追加
+    card.style.transform = "translate(-50%, -50%)"; // ★追加
+    card.onclick = () => window.animateSelectCard(i);
+    container.appendChild(card);
+  }
+
+  // 2. 0.5秒待ってからバラけさせる（待ち時間を増やして溜めを作る）
+  setTimeout(() => {
+    for(let i=0; i<CARDS.length; i++) {
+      const card = document.getElementById(`card-${i}`);
+      card.classList.remove("deck-stacked");
+      // 展開後の座標
+      const x = (i % 7) * (container.offsetWidth / 7.5); 
+      const y = Math.floor(i / 7) * 70;
+      card.style.left = x + "px";
+      card.style.top = y + "px";
+      card.style.transform = "none"; // 中央固定を解除
+    }
+    window.updateSelectionUI();
+  }, 500);
+};
+
   lbs.forEach((l, i) => { 
     const n = window.requiredCount === 3 ? ['I','II','III'][i]+'. ' : ''; 
     html += `<div class="slot-wrapper"><div class="slot-label" id="label-${i}">${n}${l.en}<span class="slot-label-jp">${l.jp}</span></div><div class="card-slot" id="slot-${i}"></div></div>`; 
