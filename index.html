@@ -66,6 +66,24 @@
   .btn-reset { background: none; border: none; color: #887a92; font-family: inherit; font-size: 11px; margin: 20px auto 0; display: block; cursor: pointer; letter-spacing: 2px; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><circle cx="20" cy="20" r="1" fill="white" opacity="0.3"/><circle cx="150" cy="80" r="1.5" fill="white" opacity="0.5"/><circle cx="300" cy="250" r="1" fill="white" opacity="0.2"/><circle cx="80" cy="320" r="2" fill="white" opacity="0.4"/></svg>') repeat; }
+  /* カードが飛ぶアニメーションの設定 */
+  .card-back {
+    position: absolute; /* 自由に動けるようにする */
+    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 10;
+  }
+  
+  /* 山札の状態（一箇所に重なる） */
+  .deck-stacked {
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) rotate(0deg) !important;
+  }
+
+  /* 22枚が場に広がるアニメーション */
+  @keyframes spreadCards {
+    from { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  }
 </style>
 </head>
 <body class="theme-default">
@@ -306,22 +324,85 @@ window.showTwoChoiceInput = function() {
   const panel = document.getElementById("main-panel");
   panel.innerHTML = `<div class="selection-guide" style="font-size:14px; line-height:1.6; margin-bottom:15px;">「二者択一」ですね。<br>迷っている2つの選択肢を書き出してください。</div><div class="pre-memo-wrap" style="display:flex; flex-direction:column; gap:12px;"><input type="text" id="choice-a-input" placeholder="選択肢A（例：今の会社に残る）" style="width:100%; padding:15px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,168,76,.5); color:#fff; border-radius:8px; outline:none; font-family:inherit;"><input type="text" id="choice-b-input" placeholder="選択肢B（例：思い切って転職する）" style="width:100%; padding:15px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,168,76,.5); color:#fff; border-radius:8px; outline:none; font-family:inherit;"><textarea id="pre-memo-input" style="height:60px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,168,76,.3); color:#fff; width:100%; padding:10px; border-radius:8px; font-family:inherit; font-size:12px;" placeholder="その他、率直な思いがあれば（任意）"></textarea><button class="btn-next" onclick="window.proceedToDeck()">直感でカードを引く</button></div>`;
 };
-window.proceedToDeck = function() {
+ window.proceedToDeck = function() {
   const m = document.getElementById("pre-memo-input"); window.preMemo = m ? m.value : "";
   if (window.requiredCount === 2) {
     const a = document.getElementById("choice-a-input"), b = document.getElementById("choice-b-input");
     window.choiceA = a && a.value ? a.value : "選択肢A"; window.choiceB = b && b.value ? b.value : "選択肢B";
   }
-  window.selectedCards = []; window.shuffledDeck = [...CARDS].sort(() => Math.random() - 0.5);
+  
+  window.selectedCards = []; 
+  window.shuffledDeck = [...CARDS].sort(() => Math.random() - 0.5);
+
   const panel = document.getElementById("main-panel");
+  
+  // スロット（置き場）の準備
   let html = `<div class="selection-guide" id="selection-guide"></div><div class="spread-area" id="spread-area">`;
-  const lbs = window.requiredCount === 3 ? [{jp:"過去",en:"PAST"},{jp:"現在",en:"PRESENT"},{jp:"未来",en:"FUTURE"}] : window.requiredCount === 2 ? [{jp:"選択肢A",en:"OPTION A"},{jp:"選択肢B",en:"OPTION B"}] : [{jp:"鑑定結果",en:"RESULT"}];
-  lbs.forEach((l, i) => { const n = window.requiredCount === 3 ? ["I","II","III"][i]+". " : ""; html += `<div class="slot-wrapper"><div class="slot-label" id="label-${i}">${n}${l.en}<span class="slot-label-jp">${l.jp}</span></div><div class="card-slot" id="slot-${i}"></div></div>`; });
-  html += `</div><div class="card-deck">`;
-  for(let i=0; i<CARDS.length; i++) html += `<div class="card-back" id="card-${i}" onclick="window.selectCard(${i})"></div>`;
-  panel.innerHTML = html + `</div>`; window.updateSelectionUI();
+  const lbs = window.requiredCount === 3 ? [{jp:'過去',en:'PAST'},{jp:'現在',en:'PRESENT'},{jp:'未来',en:'FUTURE'}] : window.requiredCount === 2 ? [{jp:'選択肢A',en:'OPTION A'},{jp:'選択肢B',en:'OPTION B'}] : [{jp:'鑑定結果',en:'RESULT'}];
+  lbs.forEach((l, i) => { 
+    const n = window.requiredCount === 3 ? ['I','II','III'][i]+'. ' : ''; 
+    html += `<div class="slot-wrapper"><div class="slot-label" id="label-${i}">${n}${l.en}<span class="slot-label-jp">${l.jp}</span></div><div class="card-slot" id="slot-${i}"></div></div>`; 
+  });
+  
+  // カードを並べるコンテナ（高さを確保）
+  html += `</div><div id="card-container" style="position:relative; min-height:350px; width:100%; margin-top:20px;"></div>`;
+  panel.innerHTML = html;
+
+  const container = document.getElementById("card-container");
+  
+  // 1. 山札として中央に生成
+  for(let i=0; i<CARDS.length; i++) {
+    const card = document.createElement("div");
+    card.className = "card-back deck-stacked";
+    card.id = `card-${i}`;
+    card.style.position = "absolute";
+    card.onclick = () => window.animateSelectCard(i);
+    container.appendChild(card);
+  }
+
+  // 2. 0.3秒後に場にバラけさせる演出
+  setTimeout(() => {
+    for(let i=0; i<CARDS.length; i++) {
+      const card = document.getElementById(`card-${i}`);
+      card.classList.remove("deck-stacked");
+      // モバイルで見やすいようにグリッド配置（横7列）
+      const x = (i % 7) * (container.offsetWidth / 7.5); 
+      const y = Math.floor(i / 7) * 70;
+      card.style.left = x + "px";
+      card.style.top = y + "px";
+    }
+    window.updateSelectionUI();
+  }, 300);
 };
-window.updateSelectionUI = function() {
+
+window.animateSelectCard = function(idx) {
+  if (window.selectedCards.length >= window.requiredCount) return;
+  
+  const cardEl = document.getElementById(`card-${idx}`);
+  if (cardEl.classList.contains('selected')) return;
+  
+  const step = window.selectedCards.length;
+  const slotEl = document.getElementById(`slot-${step}`);
+  const slotRect = slotEl.getBoundingClientRect();
+  const containerRect = document.getElementById("card-container").getBoundingClientRect();
+
+  // カードをスロットの位置へ飛ばす
+  cardEl.classList.add('selected');
+  cardEl.style.zIndex = "100";
+  cardEl.style.left = (slotRect.left - containerRect.left) + "px";
+  cardEl.style.top = (slotRect.top - containerRect.top) + "px";
+  cardEl.style.width = "80px"; // スロットサイズに合わせる
+  cardEl.style.height = "120px";
+
+  setTimeout(() => {
+    slotEl.classList.add('filled');
+    window.selectedCards.push(window.shuffledDeck[idx]);
+    window.updateSelectionUI();
+    if (window.selectedCards.length === window.requiredCount) setTimeout(() => window.showResults(), 1200);
+  }, 600);
+};
+ 
+ window.updateSelectionUI = function() {
   const step = window.selectedCards.length, guide = document.getElementById("selection-guide");
   document.body.className = "";
   if (step === window.requiredCount) { guide.innerHTML = "運命が定まりました。結果をオープンします..."; document.body.classList.add("theme-future"); return; }
