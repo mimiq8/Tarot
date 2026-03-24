@@ -351,11 +351,37 @@ window.choiceB = "";
 
 window.startSelection = function(count) {
   window.requiredCount = count;
-  if (count === 2) { window.selectedCategory = "二者択一"; window.showTwoChoiceInput(); return; }
+
+  // --- 4枚引き（フォーカード）の時のスキップ処理 ---
+  if (count === 4) {
+    // カテゴリーを「対人関係」に自動設定
+    window.selectedCategory = "あの人との関係は？（対人関係・心理）";
+    // カテゴリー選択を飛ばして、メモ入力画面へ直行
+    window.showMemoInput(); 
+    return;
+  }
+  // ----------------------------------------------
+
+  if (count === 2) { 
+    window.selectedCategory = "二者択一"; 
+    window.showTwoChoiceInput(); 
+    return; 
+  }
+
   const panel = document.getElementById("main-panel");
   let html = '<div class="selection-guide">今日はどの領域をスキャンしますか？</div><div class="category-wrap">';
-  const cats = [["今の仕事、どうなの？","（現状分析・キャリア）"],["お金との向き合い方を知りたい","（豊かさの思考・整理）"],["あの人との関係は？","（対人関係・心理）"],["あなたの知らない強み、気になりませんか？","（自己理解・才能）"],["とりあえず聞いて！","（自由入力・総合）"]];
-  cats.forEach(function(c) { html += '<button class="btn-category" onclick="window.selectCategory(this.dataset.cat)" data-cat="' + c[0].replace(/"/g,'&quot;') + '">' + c[0] + '<span>' + c[1] + '</span></button>'; });
+  const cats = [
+    ["今の仕事、どうなの？","（現状分析・キャリア）"],
+    ["お金との向き合い方を知りたい","（豊かさの思考・整理）"],
+    ["あの人との関係は？","（対人関係・心理）"],
+    ["あなたの知らない強み、気になりませんか？","（自己理解・才能）"],
+    ["とりあえず聞いて！","（自由入力・総合）"]
+  ];
+  
+  cats.forEach(function(c) { 
+    html += '<button class="btn-category" onclick="window.selectCategory(this.dataset.cat)" data-cat="' + c[0].replace(/"/g,'&quot;') + '">' + c[0] + '<span>' + c[1] + '</span></button>'; 
+  });
+  
   html += '</div>';
   panel.innerHTML = html;
 };
@@ -484,22 +510,46 @@ window.showResults = function() {
   document.body.className = "theme-default";
   var html = "";
   window.currentDrawnCards = [];
+  
   for (var i = 0; i < window.selectedCards.length; i++) {
     var c = window.selectedCards[i];
-    var isRev = Math.random() < 0.3;
+    var isRev = Math.random() < 0.3; // 30%の確率で逆位置
+    
+    // --- ラベル判定のがっちゃんこ箇所 ---
     var lbl;
-    if (window.requiredCount === 3) {
-      lbl = ["過去","現在","未来"][i];
+    if (window.requiredCount === 4) {
+      lbl = ["あなたの気持ち", "相手の気持ち", "二人の状況", "二人の未来"][i];
+    } else if (window.requiredCount === 3) {
+      lbl = ["過去", "現在", "未来"][i];
     } else if (window.requiredCount === 2) {
       lbl = i === 0 ? ("A: " + window.choiceA) : ("B: " + window.choiceB);
     } else {
       lbl = "鑑定結果";
     }
-    var msg = isRev ? (REVERSED_TEXTS[c.id] || "内省のサインです。") : c.positive;
-    html += '<div class="result-card"><span class="card-label">' + lbl + '</span><div class="card-img-wrap"><img src="' + c.image + '" class="card-img ' + (isRev ? "reversed" : "") + '" alt="' + c.name + '"></div><div class="card-status ' + (isRev ? "status-rev" : "status-up") + '">' + (isRev ? "逆位置" : "正位置") + '</div><h2 class="card-name">' + c.name + ' <span style="font-size:12px;color:#9b7e4a;">' + c.nameEn + '</span></h2><p class="card-text">' + msg + '</p></div>';
-    window.currentDrawnCards.push(c.name + (isRev ? "（逆）" : ""));
+    // ----------------------------------
+
+    var msg = isRev ? c.descRev : c.descUp;
+    
+    html += '<div class="result-card">' +
+              '<div class="card-label">' + lbl + '</div>' +
+              '<div class="card-img-wrap"><img src="' + c.img + '" class="card-img' + (isRev ? ' reversed' : '') + '"></div>' +
+              '<div class="card-status ' + (isRev ? 'status-rev' : 'status-up') + '">' + (isRev ? '逆位置' : '正位置') + '</div>' +
+              '<h2 class="card-name">' + c.name + ' <span style="font-size:12px;color:#9b7e4a;">' + c.nameEn + '</span></h2>' +
+              '<p class="card-text">' + msg + '</p>' +
+            '</div>';
+    
+    // LINE送信用のデータにもラベルを含める
+    window.currentDrawnCards.push(lbl + "：" + c.name + (isRev ? "（逆）" : ""));
   }
-  html += '<div class="action-area"><textarea id="user-memo" placeholder="Q. この結果を見て、心当たりがあることは何ですか？" style="height:90px;background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,.3);color:#fff;width:100%;padding:15px;border-radius:10px;font-family:inherit;font-size:13px;resize:none;outline:none;margin-bottom:15px;"></textarea><button class="btn-line" onclick="window.sendToLine(' + window.requiredCount + ')">公式LINEで相談を開始</button><p style="font-size:10px;color:#6a5a72;text-align:center;margin-top:8px;">※結果がコピーされます。LINEにそのまま貼り付けてください。</p><button class="btn-reset" onclick="location.reload()">最初に戻る</button></div>';
+
+  // 結果画面の下部にアクションエリアを追加
+  html += '<div class="action-area">' +
+            '<textarea id="user-memo" placeholder="Q. この結果を見て、心当たりがあることは何ですか？" style="height:90px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,168,76,.3); color:#fff; width:100%; padding:15px; border-radius:10px; font-family:inherit; font-size:13px;"></textarea>' +
+            '<button class="btn-line" onclick="window.sendToLine(' + window.requiredCount + ')">公式LINEで相談を開始</button>' +
+            '<p style="font-size:10px; color:#6a5a72; text-align:center; margin-top:8px;">※結果がコピーされます。LINEにそのまま貼り付けてください。</p>' +
+            '<button class="btn-reset" onclick="location.reload()">最初に戻る</button>' +
+          '</div>';
+
   panel.innerHTML = html;
 };
 
