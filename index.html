@@ -514,7 +514,7 @@ window.showResults = function() {
     var c = window.selectedCards[i];
     var isRev = Math.random() < 0.3; // 30%の確率で逆位置
     
-    // --- ラベル判定のがっちゃんこ箇所 ---
+    // --- 正しいラベルの判定 ---
     var lbl;
     if (window.requiredCount === 4) {
       lbl = ["あなたの気持ち", "相手の気持ち", "二人の状況", "二人の未来"][i];
@@ -525,10 +525,10 @@ window.showResults = function() {
     } else {
       lbl = "鑑定結果";
     }
-    // ----------------------------------
 
     var msg = isRev ? c.descRev : c.descUp;
     
+    // ここでHTML（画像を含むカードの見た目）を組み立てます
     html += '<div class="result-card">' +
               '<div class="card-label">' + lbl + '</div>' +
               '<div class="card-img-wrap"><img src="' + c.img + '" class="card-img' + (isRev ? ' reversed' : '') + '"></div>' +
@@ -537,15 +537,13 @@ window.showResults = function() {
               '<p class="card-text">' + msg + '</p>' +
             '</div>';
     
-    // LINE送信用のデータにもラベルを含める
     window.currentDrawnCards.push(lbl + "：" + c.name + (isRev ? "（逆）" : ""));
   }
 
-  // 結果画面の下部にアクションエリアを追加
+  // 下部のアクションエリア（LINE相談ボタンなど）
   html += '<div class="action-area">' +
             '<textarea id="user-memo" placeholder="Q. この結果を見て、心当たりがあることは何ですか？" style="height:90px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,168,76,.3); color:#fff; width:100%; padding:15px; border-radius:10px; font-family:inherit; font-size:13px;"></textarea>' +
             '<button class="btn-line" onclick="window.sendToLine(' + window.requiredCount + ')">公式LINEで相談を開始</button>' +
-            '<p style="font-size:10px; color:#6a5a72; text-align:center; margin-top:8px;">※結果がコピーされます。LINEにそのまま貼り付けてください。</p>' +
             '<button class="btn-reset" onclick="location.reload()">最初に戻る</button>' +
           '</div>';
 
