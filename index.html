@@ -96,26 +96,26 @@
   </header>
   <div class="panel" id="main-panel">
     <p class="mode-desc">「今、ここ」の直感を言語化しませんか？</p>
-    <div class="btn-wrap">
-      <button class="mode-row" onclick="window.startSelection(1)">
-        <div class="btn-mode-rect"><span>I</span></div>
-        <div class="mode-info">
-          <div class="mode-name">一枚引き</div>
-          <div class="mode-text">あなたの"今"を読むのにおすすめ</div>
+        <div class="spread-selection">
+      <button class="spread-btn" onclick="window.startSetup(1)">
+        <span class="spread-num">I</span>
+        <div class="spread-info">
+          <div class="spread-title">ワンオラクル</div>
+          <div class="spread-desc">今、必要なメッセージを一枚のカードから</div>
         </div>
       </button>
-      <button class="mode-row" onclick="window.startSelection(2)">
-        <div class="btn-mode-rect"><span>II</span></div>
-        <div class="mode-info">
-          <div class="mode-name">二者択一</div>
-          <div class="mode-text">AかBか、迷っている2つの道の行く末を比較</div>
+      <button class="spread-btn" onclick="window.startSetup(2)">
+        <span class="spread-num">II</span>
+        <div class="spread-info">
+          <div class="spread-title">二者択一</div>
+          <div class="spread-desc">AかBか。迷いへの答え</div>
         </div>
       </button>
-      <button class="mode-row" onclick="window.startSelection(3)">
-        <div class="btn-mode-rect"><span>III</span></div>
-        <div class="mode-info">
-          <div class="mode-name">三枚引き</div>
-          <div class="mode-text">悩みの過去・現在・未来の流れを読むのにおすすめ</div>
+      <button class="spread-btn" onclick="window.startSetup(3)">
+        <span class="spread-num">III</span>
+        <div class="spread-info">
+          <div class="spread-title">スリーカード</div>
+          <div class="spread-desc">過去・現在・未来の時の流れ</div>
         </div>
       </button>
       <button class="spread-btn" onclick="window.startSetup(4)">
@@ -126,9 +126,7 @@
         </div>
       </button>
     </div>
-  </div>
-</div>
-</div>
+
 <script>
 // ==========================================
 // カードデータ（Base64画像データ入り・全22枚）
