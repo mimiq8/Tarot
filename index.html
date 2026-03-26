@@ -74,10 +74,10 @@
   .card-deck { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; animation: fadeUp 0.8s ease both; }
   /* 1. 通常時：幾何学模様と深い紫で神秘的に */
 .card-back {
-  width: 45px; /* 少しサイズアップしてカード感を強調 */
-  height: 72px;
-  background-color: #1d0d42; /* 深い紫のベース */
-  /* 神秘的なひし形パターンのSVG */
+  width: 45px !important;
+  height: 72px !important;
+  display: block !important;
+  background-color: #1d0d42;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path d="M10 0 L20 10 L10 20 L0 10 Z" fill="none" stroke="rgba(201,168,76,0.3)" stroke-width="0.5"/><circle cx="10" cy="10" r="1" fill="rgba(201,168,76,0.2)"/></svg>');
   background-size: 20px 20px;
   border: 1px solid rgba(201,168,76,0.5);
@@ -90,7 +90,6 @@
   overflow: hidden;
 }
 
-/* 高級感を出す光の反射エフェクト */
 .card-back::after {
   content: "";
   position: absolute;
@@ -99,15 +98,13 @@
   pointer-events: none;
 }
 
-/* 2. ホバー時：上に浮き上がりつつ、少しだけ傾けて「選んでる感」を出す */
 .card-back:hover {
-  transform: translateY(-12px) rotate(2deg); /* 縦移動とわずかな回転 */
+  transform: translateY(-12px) rotate(2deg);
   border-color: #c9a84c;
   box-shadow: 0 12px 20px rgba(201,168,76,0.4);
-  z-index: 10; /* 重なっている時に一番上に来るように */
+  z-index: 10;
 }
 
-/* 3. 選択（決定）時：フワッと消えていく演出 */
 .card-back.selected {
   opacity: 0;
   transform: translateY(-40px) scale(0.8) rotate(-5deg);
