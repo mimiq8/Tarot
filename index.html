@@ -481,36 +481,50 @@ window.proceedToDeck = function() {
     var indexInRow = j % 8;
     var countInThisRow = (row === 2) ? 6 : 8;
     var centerOffset = (countInThisRow - 1) / 2;
+    // ★チャッピー修正1: onclickを削除し、スワイプ専用に
     html += '<div class="card-back fan-style" id="card-' + j + '" ' +
             'style="--i:' + indexInRow + '; --row:' + row + '; --center:' + centerOffset + ';" ' +
             'ontouchstart="window.cardTouchStart(event, ' + j + ')" ' +
             'ontouchmove="window.cardTouchMove(event, ' + j + ')" ' +
-            'ontouchend="window.cardTouchEnd(event, ' + j + ')" ' +
-            'onclick="window.selectCard(' + j + ', this)"></div>';
+            'ontouchend="window.cardTouchEnd(event, ' + j + ')"></div>';
   }
   html += '</div>';
   panel.innerHTML = html;
   window.updateSelectionUI();
 };
 
+// --- スワイプ制御の高度化（チャッピー修正2 & 3反映） ---
 window.touchStartY = 0;
 window.isDragging = false;
+window.dragActivated = false; // スワイプが一定距離を超えたか
+
 window.cardTouchStart = function(e, idx) {
   window.touchStartY = e.touches[0].clientY;
   window.isDragging = true;
+  window.dragActivated = false;
   var card = document.getElementById('card-' + idx);
-  if (card) { card.style.transition = "none"; card.style.zIndex = "1000"; }
+  if (card) {
+    card.style.transition = "none";
+    card.style.zIndex = "1000";
+  }
 };
+
 window.cardTouchMove = function(e, idx) {
   if (!window.isDragging) return;
   var currentY = e.touches[0].clientY;
   var diffY = currentY - window.touchStartY;
-  if (diffY < 20) {
-    var card = document.getElementById('card-' + idx);
-    if (card) card.style.transform = `translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset) + ${diffY}px)) rotate(var(--angle)) scale(1.1)`;
+  
+  // 上に15px以上動いたらドラッグ開始とみなす（遊びを作る）
+  if (diffY <= -15) { window.dragActivated = true; }
+  if (!window.dragActivated) return;
+
+  var card = document.getElementById('card-' + idx);
+  if (card && diffY < 0) { // 下方向には動かさない
+    card.style.transform = `translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset) + ${diffY}px)) rotate(var(--angle)) scale(1.1)`;
   }
   if (Math.abs(diffY) > 10) e.preventDefault();
 };
+
 window.cardTouchEnd = function(e, idx) {
   if (!window.isDragging) return;
   window.isDragging = false;
@@ -518,12 +532,15 @@ window.cardTouchEnd = function(e, idx) {
   var card = document.getElementById('card-' + idx);
   if (card) {
     card.style.transition = "all 0.4s cubic-bezier(0.2, 0, 0.2, 1)";
-    if (diffY < -50) {
+    // ちゃんとドラッグが有効で、かつ50px以上上に投げた時だけ確定
+    if (window.dragActivated && diffY < -50) {
       window.selectCard(idx, card);
     } else {
-      card.style.transform = ""; card.style.zIndex = "";
+      card.style.transform = "";
+      card.style.zIndex = "";
     }
   }
+  window.dragActivated = false;
 };
 
 window.selectCard = function(idx, element) {
@@ -533,7 +550,6 @@ window.selectCard = function(idx, element) {
   if (element) element.classList.add("selected");
   var slot = document.getElementById("slot-" + (window.selectedCards.length - 1));
   if (slot) slot.innerHTML = '<div class="card-back" style="width:100%;height:100%;margin:0;position:static;transform:none;box-shadow:none;border:1px solid rgba(201,168,76,0.3);"></div>';
-  
   window.updateSelectionUI();
   if (window.selectedCards.length === window.requiredCount) {
     setTimeout(window.showResult, 600);
@@ -556,74 +572,50 @@ window.updateSelectionUI = function() {
 window.showResult = function() {
   const panel = document.getElementById("main-panel");
   const selectedData = window.selectedCards.map(idx => window.shuffledDeck[idx]);
-  
   let resHtml = '<div class="result-display" style="text-align:center; padding:20px;">';
   resHtml += '<h2 style="color:#c9a84c; margin-bottom:30px; letter-spacing:2px;">鑑定結果</h2>';
-
   selectedData.forEach((data, i) => {
     let label = (window.requiredCount === 4) ? ["あなたの気持ち","相手の気持ち","二人の状況","二人の未来"][i] :
                 (window.requiredCount === 3) ? ["過去","現在","未来"][i] :
                 (window.requiredCount === 2) ? [window.choiceA, window.choiceB][i] : "結果";
-
-    // チャッピー推奨：正逆位の判定と解説文の参照先（positive）の修正
     const isReversed = Math.random() < 0.5;
     const statusText = isReversed ? "逆位置" : "正位置";
     const statusClass = isReversed ? "status-rev" : "status-up";
     const text = data.positive || "解説データが見つかりませんでした。";
-
-    // もともとCSSにあった .result-card などのクラスを使ってリッチに再現
     resHtml += '<div class="result-card" style="margin-bottom:40px; background:rgba(255,255,255,0.03); border-radius:20px; padding:25px; border:1px solid rgba(201,168,76,0.2);">';
     resHtml += '<div class="card-label" style="color:#c9a84c; font-weight:bold; font-size:0.9rem; margin-bottom:15px; border-bottom:1px solid rgba(201,168,76,0.3); padding-bottom:10px;">' + label + '</div>';
-    
-    // カード画像（逆位置なら回転させる）
     resHtml += '<div class="card-img-wrap" style="margin-bottom:15px; display:flex; justify-content:center;">';
-    resHtml += '<img src="' + (data.image || '') + '" alt="' + (data.name || '') + '" style="width:120px; border-radius:8px; box-shadow:0 5px 15px rgba(0,0,0,0.5); ' + (isReversed ? 'transform:rotate(180deg);' : '') + '">';
+    resHtml += '<img src="' + (data.image || '') + '" alt="' + (data.name || '') + '" style="width:140px; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,0.6); ' + (isReversed ? 'transform:rotate(180deg);' : '') + '">';
     resHtml += '</div>';
-
     resHtml += '<div class="card-status ' + statusClass + '" style="margin-bottom:10px; font-weight:bold; color:' + (isReversed ? '#8b9fc7' : '#c9a84c') + ';">' + statusText + '</div>';
-    resHtml += '<h3 class="card-name" style="margin-bottom:15px; font-size:1.2rem; color:#fff;">' + (data.name || "不明") + ' <span style="font-size:0.9rem; font-weight:normal; color:#aaa;">' + (data.nameEn || "") + '</span></h3>';
-    resHtml += '<p class="card-text" style="font-size:0.95rem; line-height:1.7; color:#e8dcc8; text-align:left; white-space:pre-wrap;">' + text + '</p>';
+    resHtml += '<h3 class="card-name" style="margin-bottom:15px; font-size:1.3rem; color:#fff;">' + (data.name || "不明") + ' <span style="font-size:0.9rem; font-weight:normal; color:#aaa; font-style:italic;">' + (data.nameEn || "") + '</span></h3>';
+    resHtml += '<p class="card-text" style="font-size:0.95rem; line-height:1.8; color:#e8dcc8; text-align:left; white-space:pre-wrap;">' + text + '</p>';
     resHtml += '</div>';
   });
-
   resHtml += '<div style="margin-top:30px; padding:25px; background:rgba(201,168,76,0.1); border-radius:20px; text-align:center; border:1px solid rgba(201,168,76,0.3);">';
-  resHtml += '<p style="font-size:0.9rem; margin-bottom:20px;">より詳細な鑑定はLINEにて承ります。</p>';
+  resHtml += '<p style="font-size:0.9rem; margin-bottom:20px; color:#e8dcc8;">より深い時期や、個別アドバイスは<br>LINE公式アカウントにてお届けしています。</p>';
   resHtml += '<button class="btn-next" onclick="window.openLine()" style="width:100%; font-weight:bold;">LINEでさらに詳しく鑑定する</button>';
   resHtml += '</div></div>';
-
   panel.innerHTML = resHtml;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 window.openLine = function() {
-  // 1. 引いたカードの結果をテキストにまとめる
   const selectedData = window.selectedCards.map(idx => window.shuffledDeck[idx]);
-  
   let copyText = "【鑑定結果】\n";
   selectedData.forEach((data, i) => {
     let label = (window.requiredCount === 4) ? ["あなたの気持ち","相手の気持ち","二人の状況","二人の未来"][i] :
                 (window.requiredCount === 3) ? ["過去","現在","未来"][i] :
                 (window.requiredCount === 2) ? [window.choiceA, window.choiceB][i] : "結果";
-    
-    // カード名を取得
-    const cardTitle = data && data.name ? data.name : "不明";
-    copyText += `${label}: ${cardTitle}\n`;
+    copyText += `${label}: ${data.name || "不明"}\n`;
   });
   copyText += "\nこの結果について詳しく教えてください。";
-
-  // 2. クリップボードにコピー
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(copyText).then(() => {
       alert("結果をコピーしました！LINEに貼り付けて送ってください。");
       window.open("https://line.me/R/ti/p/@796tkxeg", "_blank");
-    }).catch(err => {
-      // エラー時もLINEは開く
-      window.open("https://line.me/R/ti/p/@796tkxeg", "_blank");
-    });
-  } else {
-    // 古いブラウザなどのための予備
-    window.open("https://line.me/R/ti/p/@796tkxeg", "_blank");
-  }
+    }).catch(() => { window.open("https://line.me/R/ti/p/@796tkxeg", "_blank"); });
+  } else { window.open("https://line.me/R/ti/p/@796tkxeg", "_blank"); }
 };
 </script>
 </body>
