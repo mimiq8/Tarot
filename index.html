@@ -72,11 +72,11 @@
   .card-slot.active { border-color: rgba(201,168,76,1); box-shadow: 0 0 15px rgba(201,168,76,0.4) inset; transform: translateY(-5px); }
   .card-slot.filled { border-style: solid; border-color: rgba(201,168,76,0.6); background: linear-gradient(135deg, #1d0d42, #3b1d6b); background-image: repeating-linear-gradient(45deg, rgba(201,168,76,0.1) 0, rgba(201,168,76,0.1) 2px, transparent 2px, transparent 6px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); transform: translateY(0); }
   ./* 山札エリアを「扇の土台」にする */
-..card-deck {
+.card-deck {
   position: relative;
   width: 100%;
-  height: 200px;      /* 2段分を収める高さ */
-  margin-top: 100px;  /* スロットとの間にしっかり距離を作る */
+  height: 140px;      /* 段数を増やして高さを圧縮 */
+  margin-top: 150px;  /* スロットからさらに遠ざける（100px→150px） */
   display: flex;
   justify-content: center;
   perspective: 1000px;
@@ -86,46 +86,47 @@
 .card-back {
   position: absolute;
   bottom: 0;
-  /* ★ここが重要：真ん中を基準にする設定 */
   left: 50%;
-  margin-left: -25px; 
+  margin-left: -24px; /* 幅の半分 */
   
-  width: 50px;
-  height: 80px;
+  width: 48px;        /* わずかにスリム化 */
+  height: 75px;       /* わずかにコンパクト化 */
   background-color: #1d0d42;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path d="M10 0 L20 10 L10 20 L0 10 Z" fill="none" stroke="rgba(201,168,76,0.3)" stroke-width="0.5"/><circle cx="10" cy="10" r="1" fill="rgba(201,168,76,0.2)"/></svg>');
   background-size: 20px 20px;
   border: 1px solid rgba(201,168,76,0.5);
   border-radius: 6px;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s;
+  /* 揺れ・ガタつき防止のため transition を cubic-bezier に最適化 */
+  transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.3s, opacity 0.3s;
   box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 0 10px rgba(0,0,0,0.5);
-  transform-origin: center 150%; 
+  transform-origin: center 200%; /* 回転軸を遠くして扇を緩やかに */
   flex-shrink: 0;
+  backface-visibility: hidden;  /* チラつき防止 */
 }
 
-/* 扇形の計算ロジック */
+/* 扇形の計算ロジック（8枚×3段構成用） */
 .card-back.fan-style {
-  /* 段数(row) 0なら上段、1なら下段（間隔を少し詰めて45pxに） */
-  --row-offset: calc(var(--row) * 45px); 
-  /* 角度と左右のズレ（少しスリムにして画面内に収める） */
-  --angle: calc((var(--i) - 5) * 6deg); 
-  --x-offset: calc((var(--i) - 5) * 22px);
+  /* 段の間隔を35pxに詰める */
+  --row-offset: calc(var(--row) * 35px); 
+  /* 8枚の中央(3.5)を基準に角度と左右幅を計算 */
+  --angle: calc((var(--i) - 3.5) * 7deg); 
+  --x-offset: calc((var(--i) - 3.5) * 20px);
 
   transform: translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset))) rotate(var(--angle));
 }
 
 .card-back:hover {
   z-index: 100 !important;
-  /* ホバー時はさらに上に上がるように (-30px) */
-  transform: translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset) - 30px)) rotate(var(--angle)) scale(1.15);
+  /* ホバー時は上にスッと浮かせる */
+  transform: translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset) - 25px)) rotate(var(--angle)) scale(1.1);
   border-color: #c9a84c;
   box-shadow: 0 10px 20px rgba(201,168,76,0.4);
 }
 
 .card-back.selected {
   opacity: 0;
-  transform: translateY(-150px) scale(0.5) rotate(0deg);
+  transform: translateY(-200px) scale(0.4) rotate(0deg);
   pointer-events: none;
 }
 
@@ -486,19 +487,20 @@ window.proceedToDeck = function() {
     html += '<div class="slot-wrapper"><div class="slot-label" id="label-' + i + '">' + n + lbs[i].en + '<span class="slot-label-jp">' + lbs[i].jp + '</span></div><div class="card-slot" id="slot-' + i + '"></div></div>';
   }
 
-  // --- カード展開エリア（2段扇形ロジック） ---
+  // --- カード展開エリア（8枚×3段ロジックへ変更） ---
   html += '</div><div class="card-deck" id="card-deck">';
   for (var j = 0; j < CARDS.length; j++) {
-    // 11枚ごとに段（row）を分ける
-    var row = Math.floor(j / 11); 
-    var indexInRow = j % 11;
+    // 8枚ごとに段（row）を分けることで、11-11の2段から 8-8-6の3段へ
+    var row = Math.floor(j / 8); 
+    var indexInRow = j % 8;
     
-    // CSS変数 (--i, --row) を直接styleに書き込み、クラス fan-style を付与
+    // style属性に3段対応の背番号を注入します
     html += '<div class="card-back fan-style" id="card-' + j + '" ' +
             'style="--i:' + indexInRow + '; --row:' + row + ';" ' +
             'onclick="window.selectCard(' + j + ')"></div>';
   }
   html += '</div>';
+
   
   panel.innerHTML = html;
   window.updateSelectionUI();
