@@ -458,7 +458,7 @@ window.proceedToDeck = function() {
   var panel = document.getElementById("main-panel");
   var html = '<div class="selection-guide" id="selection-guide"></div><div class="spread-area" id="spread-area">';
   
-  // --- ラベル定義のがっちゃんこ箇所 ---
+  // --- ラベル定義 ---
   var lbs;
   if (window.requiredCount === 4) {
     lbs = [
@@ -476,20 +476,28 @@ window.proceedToDeck = function() {
   }
 
   for (var i = 0; i < lbs.length; i++) {
-    // 3枚と4枚の時はローマ数字の頭文字を付ける
     var n = (window.requiredCount >= 3) ? (["I","II","III","IV"][i] + ". ") : "";
     html += '<div class="slot-wrapper"><div class="slot-label" id="label-' + i + '">' + n + lbs[i].en + '<span class="slot-label-jp">' + lbs[i].jp + '</span></div><div class="card-slot" id="slot-' + i + '"></div></div>';
   }
-  // ----------------------------------
 
+  // --- カード展開エリア（2段扇形ロジック） ---
   html += '</div><div class="card-deck" id="card-deck">';
   for (var j = 0; j < CARDS.length; j++) {
-    html += '<div class="card-back" id="card-' + j + '" onclick="window.selectCard(' + j + ')"></div>';
+    // 11枚ごとに段（row）を分ける
+    var row = Math.floor(j / 11); 
+    var indexInRow = j % 11;
+    
+    // CSS変数 (--i, --row) を直接styleに書き込み、クラス fan-style を付与
+    html += '<div class="card-back fan-style" id="card-' + j + '" ' +
+            'style="--i:' + indexInRow + '; --row:' + row + ';" ' +
+            'onclick="window.selectCard(' + j + ')"></div>';
   }
   html += '</div>';
+  
   panel.innerHTML = html;
   window.updateSelectionUI();
 };
+
 
 window.updateSelectionUI = function() {
   var step = window.selectedCards.length;
