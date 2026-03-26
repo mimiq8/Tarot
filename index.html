@@ -475,71 +475,113 @@ window.proceedToDeck = function() {
     html += '<div class="slot-wrapper"><div class="slot-label">' + n + lbs[i].en + '<span class="slot-label-jp">' + lbs[i].jp + '</span></div><div class="card-slot" id="slot-' + i + '"></div></div>';
   }
 
-  html += '</div><div class="card-deck" id="card-deck">';
+  html += '</div><div class="card-deck" id="card-deck" style="touch-action: none;">';
   for (var j = 0; j < CARDS.length; j++) {
     var row = Math.floor(j / 8); 
     var indexInRow = j % 8;
     var countInThisRow = (row === 2) ? 6 : 8;
     var centerOffset = (countInThisRow - 1) / 2;
-    // ★チャッピー修正1: onclickを削除し、スワイプ専用に
+    // ★チャッピー修正：引数jを固定せず、全体のタッチイベントで制御
     html += '<div class="card-back fan-style" id="card-' + j + '" ' +
-            'style="--i:' + indexInRow + '; --row:' + row + '; --center:' + centerOffset + ';" ' +
-            'ontouchstart="window.cardTouchStart(event, ' + j + ')" ' +
-            'ontouchmove="window.cardTouchMove(event, ' + j + ')" ' +
-            'ontouchend="window.cardTouchEnd(event, ' + j + ')"></div>';
+            'style="--i:' + indexInRow + '; --row:' + row + '; --center:' + centerOffset + '; touch-action: none;" ' +
+            'ontouchstart="window.cardTouchStart(event)" ' +
+            'ontouchmove="window.cardTouchMove(event)" ' +
+            'ontouchend="window.cardTouchEnd(event)"></div>';
   }
   html += '</div>';
   panel.innerHTML = html;
   window.updateSelectionUI();
 };
 
-// --- スワイプ制御の高度化（チャッピー修正2 & 3反映） ---
+// =========================
+// ぬるぬる「なぞり選択」制御
+// =========================
 window.touchStartY = 0;
 window.isDragging = false;
-window.dragActivated = false; // スワイプが一定距離を超えたか
+window.dragActivated = false;
+window.activeCard = null;
+window.activeIdx = null;
 
-window.cardTouchStart = function(e, idx) {
-  window.touchStartY = e.touches[0].clientY;
+// 指の下にあるカードを探す「センサー」
+window.findCardFromTouch = function(touch) {
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (!el) return null;
+  const card = el.closest(".card-back");
+  if (card && card.id && card.id.startsWith("card-") && !card.classList.contains("selected")) {
+    return card;
+  }
+  return null;
+};
+
+// カードの見た目を戻す（スッと戻る速度を調整）
+window.resetCardVisual = function(card) {
+  if (!card) return;
+  card.style.transition = "transform 0.25s ease-out, box-shadow 0.25s ease";
+  card.style.transform = "";
+  card.style.zIndex = "";
+  card.style.boxShadow = "";
+};
+
+window.cardTouchStart = function(e) {
+  const t = e.touches[0];
+  window.touchStartY = t.clientY;
   window.isDragging = true;
   window.dragActivated = false;
-  var card = document.getElementById('card-' + idx);
+  
+  const card = window.findCardFromTouch(t);
   if (card) {
-    card.style.transition = "none";
+    window.activeCard = card;
+    window.activeIdx = Number(card.id.replace("card-", ""));
     card.style.zIndex = "1000";
   }
 };
 
-window.cardTouchMove = function(e, idx) {
+window.cardTouchMove = function(e) {
   if (!window.isDragging) return;
-  var currentY = e.touches[0].clientY;
-  var diffY = currentY - window.touchStartY;
-  
-  // 上に15px以上動いたらドラッグ開始とみなす（遊びを作る）
-  if (diffY <= -15) { window.dragActivated = true; }
+  const t = e.touches[0];
+  const diffY = t.clientY - window.touchStartY;
+
+  // 12px以上上に動いたら「浮かせモード」ON
+  if (diffY <= -12) { window.dragActivated = true; }
   if (!window.dragActivated) return;
 
-  var card = document.getElementById('card-' + idx);
-  if (card && diffY < 0) { // 下方向には動かさない
-    card.style.transform = `translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset) + ${diffY}px)) rotate(var(--angle)) scale(1.1)`;
+  // なぞりながら「今指の下にあるカード」を再特定
+  const currentTarget = window.findCardFromTouch(t);
+  
+  if (currentTarget !== window.activeCard) {
+    // 前のカードはスッと戻す
+    if (window.activeCard) window.resetCardVisual(window.activeCard);
+    // 新しいカードをターゲットにする
+    window.activeCard = currentTarget;
+    window.activeIdx = currentTarget ? Number(currentTarget.id.replace("card-", "")) : null;
   }
-  if (Math.abs(diffY) > 10) e.preventDefault();
+
+  if (window.activeCard && diffY < 0) {
+    const lift = Math.max(diffY, -60); // 最大60pxまで浮かせる
+    window.activeCard.style.transition = "none";
+    window.activeCard.style.zIndex = "1000";
+    window.activeCard.style.boxShadow = "0 10px 25px rgba(201,168,76,0.4)";
+    window.activeCard.style.transform = `translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset) + ${lift}px)) rotate(var(--angle)) scale(1.15)`;
+  }
+  
+  if (Math.abs(diffY) > 8) e.preventDefault();
 };
 
-window.cardTouchEnd = function(e, idx) {
+window.cardTouchEnd = function(e) {
   if (!window.isDragging) return;
   window.isDragging = false;
-  var diffY = e.changedTouches[0].clientY - window.touchStartY;
-  var card = document.getElementById('card-' + idx);
-  if (card) {
-    card.style.transition = "all 0.4s cubic-bezier(0.2, 0, 0.2, 1)";
-    // ちゃんとドラッグが有効で、かつ50px以上上に投げた時だけ確定
-    if (window.dragActivated && diffY < -50) {
-      window.selectCard(idx, card);
-    } else {
-      card.style.transform = "";
-      card.style.zIndex = "";
-    }
+  const diffY = e.changedTouches[0].clientY - window.touchStartY;
+
+  if (window.dragActivated && diffY < -50 && window.activeCard && window.activeIdx !== null) {
+    // 確定！スロットへ飛ばす
+    window.selectCard(window.activeIdx, window.activeCard);
+  } else if (window.activeCard) {
+    // キャンセル：元の位置に戻す
+    window.resetCardVisual(window.activeCard);
   }
+  
+  window.activeCard = null;
+  window.activeIdx = null;
   window.dragActivated = false;
 };
 
@@ -547,7 +589,11 @@ window.selectCard = function(idx, element) {
   if (window.selectedCards.length >= window.requiredCount) return;
   if (window.selectedCards.includes(idx)) return;
   window.selectedCards.push(idx);
-  if (element) element.classList.add("selected");
+  if (element) {
+    element.classList.add("selected");
+    element.style.transform = "translateY(-200px) scale(0)";
+    element.style.opacity = "0";
+  }
   var slot = document.getElementById("slot-" + (window.selectedCards.length - 1));
   if (slot) slot.innerHTML = '<div class="card-back" style="width:100%;height:100%;margin:0;position:static;transform:none;box-shadow:none;border:1px solid rgba(201,168,76,0.3);"></div>';
   window.updateSelectionUI();
@@ -593,7 +639,7 @@ window.showResult = function() {
     resHtml += '</div>';
   });
   resHtml += '<div style="margin-top:30px; padding:25px; background:rgba(201,168,76,0.1); border-radius:20px; text-align:center; border:1px solid rgba(201,168,76,0.3);">';
-  resHtml += '<p style="font-size:0.9rem; margin-bottom:20px; color:#e8dcc8;">より深い時期や、個別アドバイスは<br>LINE公式アカウントにてお届けしています。</p>';
+  resHtml += '<p style="font-size:0.9rem; margin-bottom:20px; color:#e8dcc8;">より深い解釈や、個別アドバイスは<br>LINE公式アカウントにてお届けしています。</p>';
   resHtml += '<button class="btn-next" onclick="window.openLine()" style="width:100%; font-weight:bold;">LINEでさらに詳しく鑑定する</button>';
   resHtml += '</div></div>';
   panel.innerHTML = resHtml;
