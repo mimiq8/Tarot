@@ -71,12 +71,12 @@
   .card-slot { width: 80px; height: 120px; border: 2px dashed rgba(201,168,76,0.3); border-radius: 6px; position: relative; transition: all 0.5s; }
   .card-slot.active { border-color: rgba(201,168,76,1); box-shadow: 0 0 15px rgba(201,168,76,0.4) inset; transform: translateY(-5px); }
   .card-slot.filled { border-style: solid; border-color: rgba(201,168,76,0.6); background: linear-gradient(135deg, #1d0d42, #3b1d6b); background-image: repeating-linear-gradient(45deg, rgba(201,168,76,0.1) 0, rgba(201,168,76,0.1) 2px, transparent 2px, transparent 6px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); transform: translateY(0); }
-  ./* 山札エリアを「扇の土台」にする */
+  /* 山札エリアを「扇の土台」にする */
 .card-deck {
   position: relative;
   width: 100%;
-  height: 140px;      /* 段数を増やして高さを圧縮 */
-  margin-top: 150px;  /* スロットからさらに遠ざける（100px→150px） */
+  height: 120px;      /* 段の間隔を詰めて高さを圧縮 */
+  margin-top: 185px;  /* スロットからガッツリ離す（150px→185px） */
   display: flex;
   justify-content: center;
   perspective: 1000px;
@@ -87,48 +87,49 @@
   position: absolute;
   bottom: 0;
   left: 50%;
-  margin-left: -24px; /* 幅の半分 */
+  margin-left: -24px; 
   
-  width: 48px;        /* わずかにスリム化 */
-  height: 75px;       /* わずかにコンパクト化 */
+  width: 48px;
+  height: 75px;
   background-color: #1d0d42;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path d="M10 0 L20 10 L10 20 L0 10 Z" fill="none" stroke="rgba(201,168,76,0.3)" stroke-width="0.5"/><circle cx="10" cy="10" r="1" fill="rgba(201,168,76,0.2)"/></svg>');
   background-size: 20px 20px;
   border: 1px solid rgba(201,168,76,0.5);
   border-radius: 6px;
   cursor: pointer;
-  /* 揺れ・ガタつき防止のため transition を cubic-bezier に最適化 */
   transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.3s, opacity 0.3s;
   box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 0 10px rgba(0,0,0,0.5);
-  transform-origin: center 200%; /* 回転軸を遠くして扇を緩やかに */
+  transform-origin: center 200%; 
   flex-shrink: 0;
-  backface-visibility: hidden;  /* チラつき防止 */
+  backface-visibility: hidden;
 }
 
 /* 扇形の計算ロジック（8枚×3段構成用） */
 .card-back.fan-style {
-  /* 段の間隔を35pxに詰める */
-  --row-offset: calc(var(--row) * 35px); 
-  /* 8枚の中央(3.5)を基準に角度と左右幅を計算 */
-  --angle: calc((var(--i) - 3.5) * 7deg); 
-  --x-offset: calc((var(--i) - 3.5) * 20px);
+  /* 段の間隔を30pxに詰める */
+  --row-offset: calc(var(--row) * 30px); 
+  /* 角度を5deg、左右幅を18pxに抑えてスリムに中央寄せ */
+  --angle: calc((var(--i) - 3.5) * 5deg); 
+  --x-offset: calc((var(--i) - 3.5) * 18px);
 
   transform: translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset))) rotate(var(--angle));
 }
 
 .card-back:hover {
   z-index: 100 !important;
-  /* ホバー時は上にスッと浮かせる */
-  transform: translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset) - 25px)) rotate(var(--angle)) scale(1.1);
+  /* ホバー時の浮き上がりを強調 */
+  transform: translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset) - 30px)) rotate(var(--angle)) scale(1.15);
   border-color: #c9a84c;
   box-shadow: 0 10px 20px rgba(201,168,76,0.4);
 }
 
 .card-back.selected {
   opacity: 0;
-  transform: translateY(-200px) scale(0.4) rotate(0deg);
+  /* スロットまで飛んでいく距離をさらに伸ばす */
+  transform: translateY(-250px) scale(0.3) rotate(0deg);
   pointer-events: none;
 }
+
 
 
   .result-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(201,168,76,.15); border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center; animation: fadeUp 0.6s ease both; }
