@@ -526,39 +526,20 @@ window.cardTouchEnd = function(e, idx) {
   }
 };
 
-// --- 必殺技：カード選択と結果への橋渡し ---
 window.selectCard = function(idx, element) {
   if (window.selectedCards.length >= window.requiredCount) return;
   if (window.selectedCards.includes(idx)) return;
-  
   window.selectedCards.push(idx);
-  
-  // カードを「選択済み」にする演出
-  if (element) {
-    element.classList.add("selected");
-  } else {
-    var el = document.getElementById("card-" + idx);
-    if (el) el.classList.add("selected");
-  }
-
-  // スロットを裏面で埋める
-  var slotIndex = window.selectedCards.length - 1;
-  var slot = document.getElementById("slot-" + slotIndex);
-  if (slot) {
-    slot.innerHTML = '<div class="card-back" style="width:100%;height:100%;margin:0;position:static;transform:none;box-shadow:none;border:1px solid rgba(201,168,76,0.3);"></div>';
-  }
+  if (element) element.classList.add("selected");
+  var slot = document.getElementById("slot-" + (window.selectedCards.length - 1));
+  if (slot) slot.innerHTML = '<div class="card-back" style="width:100%;height:100%;margin:0;position:static;transform:none;box-shadow:none;border:1px solid rgba(201,168,76,0.3);"></div>';
   
   window.updateSelectionUI();
-  
-  // ★枚数が揃ったら、AI通信せず「直接」結果画面を出す
   if (window.selectedCards.length === window.requiredCount) {
-    setTimeout(function() {
-      window.showResult();
-    }, 600);
+    setTimeout(window.showResult, 600);
   }
 };
 
-// --- ガイド表示の更新 ---
 window.updateSelectionUI = function() {
   var guide = document.getElementById("selection-guide");
   if (!guide) return;
@@ -568,50 +549,36 @@ window.updateSelectionUI = function() {
   if (window.selectedCards.length < window.requiredCount) {
     guide.innerHTML = '【' + (window.selectedCards.length + 1) + '枚目：<span style="color:#c9a84c;">' + lbs[window.selectedCards.length] + '</span>】を選んでください';
   } else {
-    guide.innerText = "すべてのカードが揃いました。";
+    guide.innerText = "鑑定中...";
   }
 };
 
 window.showResult = function() {
   const panel = document.getElementById("main-panel");
-  
-  // 1. 引いたカードのインデックスから、実際のデータを取得
-  // shuffledDeckの中身が [ {name:"XX", meaning:"YY"}, ... ] という構造であることを想定
   const selectedData = window.selectedCards.map(idx => window.shuffledDeck[idx]);
-
-  // 2. 表示用HTMLの組み立て
-  let resHtml = '<div class="result-display" style="animation: fadeIn 0.8s ease-out; width: 100%; max-width: 600px; margin: 0 auto;">';
-  resHtml += '<h2 style="color:#c9a84c; text-align:center; margin-bottom:30px; font-size:1.4rem; letter-spacing:2px;">鑑定結果</h2>';
+  let resHtml = '<div class="result-display" style="text-align:left; padding:20px;">';
+  resHtml += '<h2 style="color:#c9a84c; text-align:center; margin-bottom:30px;">鑑定結果</h2>';
 
   selectedData.forEach((data, i) => {
     let label = (window.requiredCount === 4) ? ["あなたの気持ち","相手の気持ち","二人の状況","二人の未来"][i] :
                 (window.requiredCount === 3) ? ["過去","現在","未来"][i] :
-                (window.requiredCount === 2) ? [window.choiceA, window.choiceB][i] : "今の状況";
-
-    resHtml += `<div style="margin-bottom:30px; padding:20px; background:rgba(255,255,255,0.03); border-left:3px solid #c9a84c; border-radius:0 15px 15px 0; text-align: left;">`;
-    resHtml += `<p style="color:#c9a84c; font-size:0.8rem; margin-bottom:5px; font-weight:bold;">${label}</p>`;
+                (window.requiredCount === 2) ? [window.choiceA, window.choiceB][i] : "結果";
     
-    // ★ここを修正：data.name で確実にカード名を表示させる
-    const cardTitle = data && data.name ? data.name : "不明なカード";
-    const cardMeaning = data && data.meaning ? data.meaning : "解説データが見つかりませんでした。";
-    
-    resHtml += `<h3 style="font-size:1.2rem; margin-bottom:10px; color:#fff;">${cardTitle}</h3>`;
-    resHtml += `<p style="font-size:0.95rem; line-height:1.7; color:#e8dcc8; white-space:pre-wrap;">${cardMeaning}</p>`;
-    resHtml += `</div>`;
+    // ★ここが肝：data.name と data.meaning を直接使う
+    resHtml += '<div style="margin-bottom:25px; border-left:3px solid #c9a84c; padding-left:15px;">';
+    resHtml += '<p style="color:#c9a84c; font-weight:bold; font-size:0.8rem;">' + label + '</p>';
+    resHtml += '<h3 style="margin:5px 0; color:#fff;">' + (data.name || "不明") + '</h3>';
+    resHtml += '<p style="font-size:0.9rem; line-height:1.6; color:#e8dcc8; white-space:pre-wrap;">' + (data.meaning || "") + '</p>';
+    resHtml += '</div>';
   });
 
-  // 3. LINE誘導セクション
-  resHtml += '<div style="margin-top:40px; padding:25px; background:rgba(201,168,76,0.1); border-radius:20px; text-align:center; border:1px solid rgba(201,168,76,0.3);">';
-  resHtml += '<p style="font-size:0.9rem; margin-bottom:15px; line-height:1.6; color:#e8dcc8;">より具体的な時期や、あなただけの詳細なアドバイスは<br><span style="color:#c9a84c;">LINE公式アカウント</span>にて個別にお伝えしています。</p>';
-  resHtml += '<button class="btn-next" onclick="window.openLine()" style="width:100%; font-weight:bold; cursor:pointer;">LINEでさらに詳しく鑑定する</button>';
-  resHtml += '</div>';
-  resHtml += '</div>';
-
+  resHtml += '<div style="margin-top:30px; padding:20px; background:rgba(201,168,76,0.1); border-radius:15px; text-align:center;">';
+  resHtml += '<button class="btn-next" onclick="window.openLine()" style="width:100%;">LINEでさらに詳しく鑑定する</button>';
+  resHtml += '</div></div>';
   panel.innerHTML = resHtml;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo(0, 0);
 };
 
-// LINEを開く関数
 window.openLine = function() {
   window.open("https://line.me/R/ti/p/@796tkxeg", "_blank");
 };
