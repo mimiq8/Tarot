@@ -596,7 +596,34 @@ window.showResult = function() {
 };
 
 window.openLine = function() {
-  window.open("https://line.me/R/ti/p/@796tkxeg", "_blank");
+  // 1. 引いたカードの結果をテキストにまとめる
+  const selectedData = window.selectedCards.map(idx => window.shuffledDeck[idx]);
+  
+  let copyText = "【鑑定結果】\n";
+  selectedData.forEach((data, i) => {
+    let label = (window.requiredCount === 4) ? ["あなたの気持ち","相手の気持ち","二人の状況","二人の未来"][i] :
+                (window.requiredCount === 3) ? ["過去","現在","未来"][i] :
+                (window.requiredCount === 2) ? [window.choiceA, window.choiceB][i] : "結果";
+    
+    // カード名を取得
+    const cardTitle = data && data.name ? data.name : "不明";
+    copyText += `${label}: ${cardTitle}\n`;
+  });
+  copyText += "\nこの結果について詳しく教えてください。";
+
+  // 2. クリップボードにコピー
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(copyText).then(() => {
+      alert("結果をコピーしました！LINEに貼り付けて送ってください。");
+      window.open("https://line.me/R/ti/p/@796tkxeg", "_blank");
+    }).catch(err => {
+      // エラー時もLINEは開く
+      window.open("https://line.me/R/ti/p/@796tkxeg", "_blank");
+    });
+  } else {
+    // 古いブラウザなどのための予備
+    window.open("https://line.me/R/ti/p/@796tkxeg", "_blank");
+  }
 };
 </script>
 </body>
