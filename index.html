@@ -413,11 +413,9 @@ window.startSelection = function(count) {
 
   // --- 4枚引き（フォーカード）の時のスキップ処理 ---
   if (count === 4) {
-    // カテゴリー選択を飛ばして、直接メモ入力画面（selectCategory）を呼び出す
     window.selectCategory("あの人との関係は？（対人関係・心理）"); 
     return;
   }
-  // ----------------------------------------------
 
   if (count === 2) { 
     window.selectedCategory = "二者択一"; 
@@ -439,7 +437,7 @@ window.startSelection = function(count) {
     html += '<button class="btn-category" onclick="window.selectCategory(this.dataset.cat)" data-cat="' + c[0].replace(/"/g,'&quot;') + '">' + c[0] + '<span>' + c[1] + '</span></button>'; 
   });
   
-    html += '</div>';
+  html += '</div>';
   panel.innerHTML = html;
 };
 
@@ -465,7 +463,6 @@ window.proceedToDeck = function() {
   window.selectedCards = [];
   window.shuffledDeck = CARDS.slice().sort(function() { return Math.random() - 0.5; });
   var panel = document.getElementById("main-panel");
-  var html = '<div class="selection-guide" id="selection-guide"></div><div class="spread-area" id="spread-area">';
   
   var lbs;
   if (window.requiredCount === 4) {
@@ -478,12 +475,12 @@ window.proceedToDeck = function() {
     lbs = [{jp:"鑑定結果",en:"RESULT"}];
   }
 
+  var html = '<div class="selection-guide" id="selection-guide"></div><div class="spread-area" id="spread-area">';
   for (var i = 0; i < lbs.length; i++) {
     var n = (window.requiredCount >= 3) ? (["I","II","III","IV"][i] + ". ") : "";
-    html += '<div class="slot-wrapper"><div class="slot-label" id="label-' + i + '">' + n + lbs[i].en + '<span class="slot-label-jp">' + lbs[i].jp + '</span></div><div class="card-slot" id="slot-' + i + '"></div></div>';
+    html += '<div class="slot-wrapper"><div class="slot-label">' + n + lbs[i].en + '<span class="slot-label-jp">' + lbs[i].jp + '</span></div><div class="card-slot" id="slot-' + i + '"></div></div>';
   }
 
-  // --- カード展開エリア（8枚×3段 センタリング + スワイプセンサー） ---
   html += '</div><div class="card-deck" id="card-deck">';
   for (var j = 0; j < CARDS.length; j++) {
     var row = Math.floor(j / 8); 
@@ -504,7 +501,6 @@ window.proceedToDeck = function() {
   window.updateSelectionUI();
 };
 
-// --- スワイプ制御ロジック ---
 window.touchStartY = 0;
 window.isDragging = false;
 
@@ -522,7 +518,6 @@ window.cardTouchMove = function(e, idx) {
   if (!window.isDragging) return;
   var currentY = e.touches[0].clientY;
   var diffY = currentY - window.touchStartY;
-  
   if (diffY < 20) {
     var card = document.getElementById('card-' + idx);
     if (card) {
@@ -538,7 +533,6 @@ window.cardTouchEnd = function(e, idx) {
   var currentY = e.changedTouches[0].clientY;
   var diffY = currentY - window.touchStartY;
   var card = document.getElementById('card-' + idx);
-  
   if (card) {
     card.style.transition = "all 0.4s cubic-bezier(0.2, 0, 0.2, 1)";
     if (diffY < -50) {
@@ -549,7 +543,6 @@ window.cardTouchEnd = function(e, idx) {
     }
   }
 };
-
 </script>
 </body>
 </html>
