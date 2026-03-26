@@ -575,16 +575,12 @@ window.updateSelectionUI = function() {
 window.showResult = function() {
   const panel = document.getElementById("main-panel");
   
-  // 1. 引いたカードのデータを取得
-  const selectedData = window.selectedCards.map(idx => {
-    const cardName = window.shuffledDeck[idx];
-    // TarotData（元々の解説データ）から、このカードの情報を探す
-    // ※もしデータ構造が違う場合は、ここを微調整します
-    return typeof TarotData !== "undefined" ? TarotData[cardName] : { name: cardName, meaning: "解説データを読み込めませんでした。" };
-  });
+  // 1. 引いたカードのインデックスから、実際のデータを取得
+  // shuffledDeckの中身が [ {name:"XX", meaning:"YY"}, ... ] という構造であることを想定
+  const selectedData = window.selectedCards.map(idx => window.shuffledDeck[idx]);
 
   // 2. 表示用HTMLの組み立て
-  let resHtml = '<div class="result-display" style="animation: fadeIn 0.8s ease-out;">';
+  let resHtml = '<div class="result-display" style="animation: fadeIn 0.8s ease-out; width: 100%; max-width: 600px; margin: 0 auto;">';
   resHtml += '<h2 style="color:#c9a84c; text-align:center; margin-bottom:30px; font-size:1.4rem; letter-spacing:2px;">鑑定結果</h2>';
 
   selectedData.forEach((data, i) => {
@@ -592,17 +588,22 @@ window.showResult = function() {
                 (window.requiredCount === 3) ? ["過去","現在","未来"][i] :
                 (window.requiredCount === 2) ? [window.choiceA, window.choiceB][i] : "今の状況";
 
-    resHtml += `<div style="margin-bottom:30px; padding:20px; background:rgba(255,255,255,0.03); border-left:3px solid #c9a84c; border-radius:0 15px 15px 0;">`;
+    resHtml += `<div style="margin-bottom:30px; padding:20px; background:rgba(255,255,255,0.03); border-left:3px solid #c9a84c; border-radius:0 15px 15px 0; text-align: left;">`;
     resHtml += `<p style="color:#c9a84c; font-size:0.8rem; margin-bottom:5px; font-weight:bold;">${label}</p>`;
-    resHtml += `<h3 style="font-size:1.2rem; margin-bottom:10px;">${data.name || window.selectedCards[i]}</h3>`;
-    resHtml += `<p style="font-size:0.95rem; line-height:1.7; color:#e8dcc8; white-space:pre-wrap;">${data.meaning || ""}</p>`;
+    
+    // ★ここを修正：data.name で確実にカード名を表示させる
+    const cardTitle = data && data.name ? data.name : "不明なカード";
+    const cardMeaning = data && data.meaning ? data.meaning : "解説データが見つかりませんでした。";
+    
+    resHtml += `<h3 style="font-size:1.2rem; margin-bottom:10px; color:#fff;">${cardTitle}</h3>`;
+    resHtml += `<p style="font-size:0.95rem; line-height:1.7; color:#e8dcc8; white-space:pre-wrap;">${cardMeaning}</p>`;
     resHtml += `</div>`;
   });
 
   // 3. LINE誘導セクション
   resHtml += '<div style="margin-top:40px; padding:25px; background:rgba(201,168,76,0.1); border-radius:20px; text-align:center; border:1px solid rgba(201,168,76,0.3);">';
-  resHtml += '<p style="font-size:0.9rem; margin-bottom:15px; line-height:1.6;">より具体的な時期や、あなただけの詳細なアドバイスは<br>LINE公式アカウントにて個別にお伝えしています。</p>';
-  resHtml += '<button class="btn-next" onclick="window.openLine()" style="width:100%; font-weight:bold;">LINEでさらに詳しく鑑定する</button>';
+  resHtml += '<p style="font-size:0.9rem; margin-bottom:15px; line-height:1.6; color:#e8dcc8;">より具体的な時期や、あなただけの詳細なアドバイスは<br><span style="color:#c9a84c;">LINE公式アカウント</span>にて個別にお伝えしています。</p>';
+  resHtml += '<button class="btn-next" onclick="window.openLine()" style="width:100%; font-weight:bold; cursor:pointer;">LINEでさらに詳しく鑑定する</button>';
   resHtml += '</div>';
   resHtml += '</div>';
 
