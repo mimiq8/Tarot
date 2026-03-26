@@ -104,13 +104,15 @@
   backface-visibility: hidden;
 }
 
-/* 扇形の計算ロジック（8枚×3段構成用） */
+/* 扇形の計算ロジック（各段の中央値に応じて自動センタリング） */
 .card-back.fan-style {
-  /* 段の間隔を30pxに詰める */
+  /* 段の間隔を30pxに設定 */
   --row-offset: calc(var(--row) * 30px); 
-  /* 角度を5deg、左右幅を18pxに抑えてスリムに中央寄せ */
-  --angle: calc((var(--i) - 3.5) * 5deg); 
-  --x-offset: calc((var(--i) - 3.5) * 18px);
+  
+  /* 固定値「3.5」を、JSから届く「var(--center)」に書き換え */
+  /* これにより、8枚の段は3.5、6枚の段は2.5を基準に扇が広がります */
+  --angle: calc((var(--i) - var(--center)) * 5deg); 
+  --x-offset: calc((var(--i) - var(--center)) * 18px);
 
   transform: translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset))) rotate(var(--angle));
 }
@@ -488,24 +490,28 @@ window.proceedToDeck = function() {
     html += '<div class="slot-wrapper"><div class="slot-label" id="label-' + i + '">' + n + lbs[i].en + '<span class="slot-label-jp">' + lbs[i].jp + '</span></div><div class="card-slot" id="slot-' + i + '"></div></div>';
   }
 
-  // --- カード展開エリア（8枚×3段ロジックへ変更） ---
+  // --- カード展開エリア（センタリング対応・3段ロジック） ---
   html += '</div><div class="card-deck" id="card-deck">';
   for (var j = 0; j < CARDS.length; j++) {
-    // 8枚ごとに段（row）を分けることで、11-11の2段から 8-8-6の3段へ
     var row = Math.floor(j / 8); 
     var indexInRow = j % 8;
     
-    // style属性に3段対応の背番号を注入します
+    // その段の総枚数を判定（0段目・1段目は8枚、2段目=3段目は残り6枚）
+    var countInThisRow = (row === 2) ? 6 : 8;
+    // その段の「中央」を算出（例：8枚なら 3.5、6枚なら 2.5）
+    var centerOffset = (countInThisRow - 1) / 2;
+    
+    // 新しく --center という変数を渡します
     html += '<div class="card-back fan-style" id="card-' + j + '" ' +
-            'style="--i:' + indexInRow + '; --row:' + row + ';" ' +
+            'style="--i:' + indexInRow + '; --row:' + row + '; --center:' + centerOffset + ';" ' +
             'onclick="window.selectCard(' + j + ')"></div>';
   }
   html += '</div>';
 
-  
   panel.innerHTML = html;
   window.updateSelectionUI();
 };
+
 
 
 window.updateSelectionUI = function() {
