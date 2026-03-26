@@ -526,12 +526,16 @@ window.cardTouchEnd = function(e, idx) {
   }
 };
 
-// 必殺技の実体：ここで投げられたカードを処理します
+// --- カード選択の核心ロジック（ここを修正） ---
 window.selectCard = function(idx, element) {
+  // 1. 重複・超過チェック
   if (window.selectedCards.length >= window.requiredCount) return;
   if (window.selectedCards.includes(idx)) return;
+  
+  // 2. 選択リストに追加
   window.selectedCards.push(idx);
   
+  // 3. 視覚的演出（カードを消す or 飛ばす）
   if (element) {
     element.classList.add("selected");
   } else {
@@ -539,14 +543,76 @@ window.selectCard = function(idx, element) {
     if (el) el.classList.add("selected");
   }
 
-  var slot = document.getElementById("slot-" + (window.selectedCards.length - 1));
+  // 4. スロットを埋める
+  var slotIndex = window.selectedCards.length - 1;
+  var slot = document.getElementById("slot-" + slotIndex);
   if (slot) {
-    slot.innerHTML = '<div class="card-back" style="width:100%;height:100%;margin:0;position:static;transform:none;box-shadow:none;"></div>';
+    slot.innerHTML = '<div class="card-back" style="width:100%; height:100%; margin:0; position:static; transform:none; cursor:default; box-shadow:none; border:1px solid rgba(201,168,76,0.3);"></div>';
   }
   
+  // 5. UI（ガイド文字）の更新
   window.updateSelectionUI();
+  
+  // 6. ★重要：全枚数揃ったかチェック
   if (window.selectedCards.length === window.requiredCount) {
-    setTimeout(window.showResult, 600);
+    console.log("全枚数完了：鑑定へ移行します");
+    // 0.8秒待ってから結果画面を表示（演出の間を作る）
+    setTimeout(function() {
+      window.showResult();
+    }, 800);
+  }
+};
+
+// --- ガイド表示の更新 ---
+window.updateSelectionUI = function() {
+  var guide = document.getElementById("selection-guide");
+  if (!guide) return;
+  
+  var lbs = (window.requiredCount === 4) ? ["あなたの気持ち","相手の気持ち","二人の状況","二人の未来"] :
+            (window.requiredCount === 3) ? ["過去","現在","未来"] :
+            (window.requiredCount === 2) ? [window.choiceA, window.choiceB] : ["鑑定結果"];
+    
+  if (window.selectedCards.length < window.requiredCount) {
+    var nextLabel = lbs[window.selectedCards.length];
+    guide.innerHTML = '【' + (window.selectedCards.length + 1) + '枚目：<span style="color:#c9a84c;">' + nextLabel + '</span>】を選んでください';
+  } else {
+    guide.innerText = "すべてのカードが揃いました。鑑定中...";
+  }
+};
+
+// --- 鑑定結果の表示とAI送信 ---
+window.showResult = function() {
+  const panel = document.getElementById("main-panel");
+  // 読み込み中画面へ切り替え
+  panel.innerHTML = '<div class="loading-wrap"><div class="loading-spinner"></div><p style="margin-top:20px; color:#c9a84c; font-style:italic;">カードの声を聴いています...</p></div>';
+  
+  // 選択されたカード名を取得
+  const selectedData = window.selectedCards.map(function(idx) {
+    return window.shuffledDeck[idx];
+  });
+  
+  const userMemo = window.preMemo || "特になし";
+  
+  // AIに送るプロンプトを構築
+  let prompt = "タロット占い師として、以下の入力を元に深く、かつ論理的に鑑定してください。\n\n";
+  prompt += "【相談内容の背景】\n" + userMemo + "\n\n";
+  if (window.requiredCount === 2) {
+    prompt += "【比較する選択肢】\nA: " + window.choiceA + "\nB: " + window.choiceB + "\n\n";
+  }
+  prompt += "【引いたカード】\n";
+  selectedData.forEach(function(cardName, i) {
+    let label = (window.requiredCount === 4) ? ["あなたの気持ち","相手の気持ち","二人の状況","二人の未来"][i] :
+                (window.requiredCount === 3) ? ["過去","現在","未来"][i] :
+                (window.requiredCount === 2) ? [window.choiceA, window.choiceB][i] : "今の状況";
+    prompt += (i + 1) + ". " + label + ": " + cardName + "\n";
+  });
+
+  // 既存のAI通信関数を呼び出す
+  if (typeof window.chatWithAI === "function") {
+    window.chatWithAI(prompt);
+  } else {
+    panel.innerHTML = "<h3>鑑定結果</h3><p>AI通信関数が見つかりません。コンソールを確認してください。</p>";
+    console.error("chatWithAI is not defined");
   }
 };
 </script>
