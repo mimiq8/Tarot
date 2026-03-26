@@ -541,16 +541,22 @@ window.cardTouchEnd = function(e, idx) {
   var card = document.getElementById('card-' + idx);
   
   if (card) {
+    // 弾いた後の滑らかな戻りや飛びのアニメーション設定
     card.style.transition = "all 0.4s cubic-bezier(0.2, 0, 0.2, 1)";
-    // 50px以上上に弾いたら決定
+    
+    // ★判定：50px以上「上に（マイナス方向）」弾いたら決定
     if (diffY < -50) {
       window.selectCard(idx, card);
     } else {
+      // 弾きが足りない場合は元の位置（CSSで定義した扇形）に戻す
       card.style.transform = ""; 
       card.style.zIndex = "";
     }
   }
 };
+// ここまでがスワイプ制御の終了です
+
 </script>
 </body>
 </html>
+
