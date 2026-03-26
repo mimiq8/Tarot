@@ -464,16 +464,10 @@ window.proceedToDeck = function() {
   window.shuffledDeck = CARDS.slice().sort(function() { return Math.random() - 0.5; });
   var panel = document.getElementById("main-panel");
   
-  var lbs;
-  if (window.requiredCount === 4) {
-    lbs = [{jp:"あなたの気持ち",en:"YOUR MIND"},{jp:"相手の気持ち",en:"THEIR MIND"},{jp:"二人の状況",en:"CURRENT STATUS"},{jp:"二人の未来",en:"FUTURE OUTLOOK"}];
-  } else if (window.requiredCount === 3) {
-    lbs = [{jp:"過去",en:"PAST"},{jp:"現在",en:"PRESENT"},{jp:"未来",en:"FUTURE"}];
-  } else if (window.requiredCount === 2) {
-    lbs = [{jp:"選択肢A",en:"OPTION A"},{jp:"選択肢B",en:"OPTION B"}];
-  } else {
-    lbs = [{jp:"鑑定結果",en:"RESULT"}];
-  }
+  var lbs = (window.requiredCount === 4) ? [{jp:"あなたの気持ち",en:"YOUR MIND"},{jp:"相手の気持ち",en:"THEIR MIND"},{jp:"二人の状況",en:"CURRENT STATUS"},{jp:"二人の未来",en:"FUTURE OUTLOOK"}] :
+            (window.requiredCount === 3) ? [{jp:"過去",en:"PAST"},{jp:"現在",en:"PRESENT"},{jp:"未来",en:"FUTURE"}] :
+            (window.requiredCount === 2) ? [{jp:"選択肢A",en:"OPTION A"},{jp:"選択肢B",en:"OPTION B"}] :
+            [{jp:"鑑定結果",en:"RESULT"}];
 
   var html = '<div class="selection-guide" id="selection-guide"></div><div class="spread-area" id="spread-area">';
   for (var i = 0; i < lbs.length; i++) {
@@ -487,7 +481,6 @@ window.proceedToDeck = function() {
     var indexInRow = j % 8;
     var countInThisRow = (row === 2) ? 6 : 8;
     var centerOffset = (countInThisRow - 1) / 2;
-    
     html += '<div class="card-back fan-style" id="card-' + j + '" ' +
             'style="--i:' + indexInRow + '; --row:' + row + '; --center:' + centerOffset + ';" ' +
             'ontouchstart="window.cardTouchStart(event, ' + j + ')" ' +
@@ -496,54 +489,66 @@ window.proceedToDeck = function() {
             'onclick="window.selectCard(' + j + ', this)"></div>';
   }
   html += '</div>';
-
   panel.innerHTML = html;
   window.updateSelectionUI();
 };
 
 window.touchStartY = 0;
 window.isDragging = false;
-
 window.cardTouchStart = function(e, idx) {
   window.touchStartY = e.touches[0].clientY;
   window.isDragging = true;
   var card = document.getElementById('card-' + idx);
-  if (card) {
-    card.style.transition = "none";
-    card.style.zIndex = "1000";
-  }
+  if (card) { card.style.transition = "none"; card.style.zIndex = "1000"; }
 };
-
 window.cardTouchMove = function(e, idx) {
   if (!window.isDragging) return;
   var currentY = e.touches[0].clientY;
   var diffY = currentY - window.touchStartY;
   if (diffY < 20) {
     var card = document.getElementById('card-' + idx);
-    if (card) {
-      card.style.transform = `translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset) + ${diffY}px)) rotate(var(--angle)) scale(1.1)`;
-    }
+    if (card) card.style.transform = `translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset) + ${diffY}px)) rotate(var(--angle)) scale(1.1)`;
   }
   if (Math.abs(diffY) > 10) e.preventDefault();
 };
-
 window.cardTouchEnd = function(e, idx) {
   if (!window.isDragging) return;
   window.isDragging = false;
-  var currentY = e.changedTouches[0].clientY;
-  var diffY = currentY - window.touchStartY;
+  var diffY = e.changedTouches[0].clientY - window.touchStartY;
   var card = document.getElementById('card-' + idx);
   if (card) {
     card.style.transition = "all 0.4s cubic-bezier(0.2, 0, 0.2, 1)";
     if (diffY < -50) {
       window.selectCard(idx, card);
     } else {
-      card.style.transform = ""; 
-      card.style.zIndex = "";
+      card.style.transform = ""; card.style.zIndex = "";
     }
+  }
+};
+
+// 必殺技の実体：ここで投げられたカードを処理します
+window.selectCard = function(idx, element) {
+  if (window.selectedCards.length >= window.requiredCount) return;
+  if (window.selectedCards.includes(idx)) return;
+  window.selectedCards.push(idx);
+  
+  if (element) {
+    element.classList.add("selected");
+  } else {
+    var el = document.getElementById("card-" + idx);
+    if (el) el.classList.add("selected");
+  }
+
+  var slot = document.getElementById("slot-" + (window.selectedCards.length - 1));
+  if (slot) {
+    slot.innerHTML = '<div class="card-back" style="width:100%;height:100%;margin:0;position:static;transform:none;box-shadow:none;"></div>';
+  }
+  
+  window.updateSelectionUI();
+  if (window.selectedCards.length === window.requiredCount) {
+    setTimeout(window.showResult, 600);
   }
 };
 </script>
 </body>
 </html>
-
