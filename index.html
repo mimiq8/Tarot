@@ -490,6 +490,50 @@ window.proceedToDeck = function() {
     html += '<div class="slot-wrapper"><div class="slot-label" id="label-' + i + '">' + n + lbs[i].en + '<span class="slot-label-jp">' + lbs[i].jp + '</span></div><div class="card-slot" id="slot-' + i + '"></div></div>';
   }
 
+  // --- カード展開エリア（スワイプセンサー付き・3段センタリング） ---
+  html += '</div><div class="card-deck" id="card-deck">';
+  for (var j = 0; j < CARDS.length; j++) {
+    var row = Math.floor(j / 8); 
+    var indexInRow = j % 8;
+    var countInThisRow = (row === 2) ? 6 : 8;
+    var centerOffset = (countInThisRow - 1) / 2;
+    
+    // ontouch系イベントを追加して、指の動きを監視できるようにします
+    html += '<div class="card-back fan-style" id="card-' + j + '" ' +
+            'style="--i:' + indexInRow + '; --row:' + row + '; --center:' + centerOffset + ';" ' +
+            'ontouchstart="window.cardTouchStart(event, ' + j + ')" ' +
+            'ontouchmove="window.cardTouchMove(event, ' + j + ')" ' +
+            'ontouchend="window.cardTouchEnd(event, ' + j + ')" ' +
+            'onclick="window.selectCard(' + j + ')"></div>';
+  }
+  html += '</div>';
+
+  panel.innerHTML = html;
+  window.updateSelectionUI();
+};
+
+  // --- ラベル定義 ---
+  var lbs;
+  if (window.requiredCount === 4) {
+    lbs = [
+      {jp:"あなたの気持ち",en:"YOUR MIND"},
+      {jp:"相手の気持ち",en:"THEIR MIND"},
+      {jp:"二人の状況",en:"CURRENT STATUS"},
+      {jp:"二人の未来",en:"FUTURE OUTLOOK"}
+    ];
+  } else if (window.requiredCount === 3) {
+    lbs = [{jp:"過去",en:"PAST"},{jp:"現在",en:"PRESENT"},{jp:"未来",en:"FUTURE"}];
+  } else if (window.requiredCount === 2) {
+    lbs = [{jp:"選択肢A",en:"OPTION A"},{jp:"選択肢B",en:"OPTION B"}];
+  } else {
+    lbs = [{jp:"鑑定結果",en:"RESULT"}];
+  }
+
+  for (var i = 0; i < lbs.length; i++) {
+    var n = (window.requiredCount >= 3) ? (["I","II","III","IV"][i] + ". ") : "";
+    html += '<div class="slot-wrapper"><div class="slot-label" id="label-' + i + '">' + n + lbs[i].en + '<span class="slot-label-jp">' + lbs[i].jp + '</span></div><div class="card-slot" id="slot-' + i + '"></div></div>';
+  }
+
   // --- カード展開エリア（センタリング対応・3段ロジック） ---
   html += '</div><div class="card-deck" id="card-deck">';
   for (var j = 0; j < CARDS.length; j++) {
@@ -655,6 +699,57 @@ window._fallbackCopy = function(text) {
   document.body.removeChild(ta);
   window.open("https://line.me/R/ti/p/@796tkxeg", "_blank");
 };
+// スワイプ管理用変数
+window.touchStartY = 0;
+window.isDragging = false;
+
+// 1. タッチ開始
+window.cardTouchStart = function(e, idx) {
+  window.touchStartY = e.touches[0].clientY;
+  window.isDragging = true;
+  var card = document.getElementById('card-' + idx);
+  card.style.transition = "none"; // 指に吸い付かせるためアニメーションを一時オフ
+  card.style.zIndex = "1000";     // 掴んでいるカードを一番手前に
+};
+
+// 2. 指の動きに合わせてスライド
+window.cardTouchMove = function(e, idx) {
+  if (!window.isDragging) return;
+  var currentY = e.touches[0].clientY;
+  var diffY = currentY - window.touchStartY;
+  
+  // 上に動かす時だけ反応（少し下に動くのは許容）
+  if (diffY < 20) {
+    var card = document.getElementById('card-' + idx);
+    // 元の扇形の位置からのズレを計算
+    card.style.transform = `translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset) + ${diffY}px)) rotate(var(--angle)) scale(1.1)`;
+  }
+  
+  // 画面スクロールを防止
+  if (Math.abs(diffY) > 10) e.preventDefault();
+};
+
+// 3. 指を離した時の判定
+window.cardTouchEnd = function(e, idx) {
+  if (!window.isDragging) return;
+  window.isDragging = false;
+  
+  var currentY = e.changedTouches[0].clientY;
+  var diffY = currentY - window.touchStartY;
+  var card = document.getElementById('card-' + idx);
+  
+  card.style.transition = "all 0.4s cubic-bezier(0.2, 0, 0.2, 1)";
+  
+  // ★判定：50px以上「上に」弾いたら決定
+  if (diffY < -50) {
+    window.selectCard(idx, card);
+  } else {
+    // 戻るアニメーション（CSSの元の形に戻る）
+    card.style.transform = ""; 
+    card.style.zIndex = "";
+  }
+};
+
 </script>
 </body>
 </html>
