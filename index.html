@@ -556,27 +556,43 @@ window.updateSelectionUI = function() {
 window.showResult = function() {
   const panel = document.getElementById("main-panel");
   const selectedData = window.selectedCards.map(idx => window.shuffledDeck[idx]);
-  let resHtml = '<div class="result-display" style="text-align:left; padding:20px;">';
-  resHtml += '<h2 style="color:#c9a84c; text-align:center; margin-bottom:30px;">鑑定結果</h2>';
+  
+  let resHtml = '<div class="result-display" style="text-align:center; padding:20px;">';
+  resHtml += '<h2 style="color:#c9a84c; margin-bottom:30px; letter-spacing:2px;">鑑定結果</h2>';
 
   selectedData.forEach((data, i) => {
     let label = (window.requiredCount === 4) ? ["あなたの気持ち","相手の気持ち","二人の状況","二人の未来"][i] :
                 (window.requiredCount === 3) ? ["過去","現在","未来"][i] :
                 (window.requiredCount === 2) ? [window.choiceA, window.choiceB][i] : "結果";
+
+    // チャッピー推奨：正逆位の判定と解説文の参照先（positive）の修正
+    const isReversed = Math.random() < 0.5;
+    const statusText = isReversed ? "逆位置" : "正位置";
+    const statusClass = isReversed ? "status-rev" : "status-up";
+    const text = data.positive || "解説データが見つかりませんでした。";
+
+    // もともとCSSにあった .result-card などのクラスを使ってリッチに再現
+    resHtml += '<div class="result-card" style="margin-bottom:40px; background:rgba(255,255,255,0.03); border-radius:20px; padding:25px; border:1px solid rgba(201,168,76,0.2);">';
+    resHtml += '<div class="card-label" style="color:#c9a84c; font-weight:bold; font-size:0.9rem; margin-bottom:15px; border-bottom:1px solid rgba(201,168,76,0.3); padding-bottom:10px;">' + label + '</div>';
     
-    // ★ここが肝：data.name と data.meaning を直接使う
-    resHtml += '<div style="margin-bottom:25px; border-left:3px solid #c9a84c; padding-left:15px;">';
-    resHtml += '<p style="color:#c9a84c; font-weight:bold; font-size:0.8rem;">' + label + '</p>';
-    resHtml += '<h3 style="margin:5px 0; color:#fff;">' + (data.name || "不明") + '</h3>';
-    resHtml += '<p style="font-size:0.9rem; line-height:1.6; color:#e8dcc8; white-space:pre-wrap;">' + (data.meaning || "") + '</p>';
+    // カード画像（逆位置なら回転させる）
+    resHtml += '<div class="card-img-wrap" style="margin-bottom:15px; display:flex; justify-content:center;">';
+    resHtml += '<img src="' + (data.image || '') + '" alt="' + (data.name || '') + '" style="width:120px; border-radius:8px; box-shadow:0 5px 15px rgba(0,0,0,0.5); ' + (isReversed ? 'transform:rotate(180deg);' : '') + '">';
+    resHtml += '</div>';
+
+    resHtml += '<div class="card-status ' + statusClass + '" style="margin-bottom:10px; font-weight:bold; color:' + (isReversed ? '#8b9fc7' : '#c9a84c') + ';">' + statusText + '</div>';
+    resHtml += '<h3 class="card-name" style="margin-bottom:15px; font-size:1.2rem; color:#fff;">' + (data.name || "不明") + ' <span style="font-size:0.9rem; font-weight:normal; color:#aaa;">' + (data.nameEn || "") + '</span></h3>';
+    resHtml += '<p class="card-text" style="font-size:0.95rem; line-height:1.7; color:#e8dcc8; text-align:left; white-space:pre-wrap;">' + text + '</p>';
     resHtml += '</div>';
   });
 
-  resHtml += '<div style="margin-top:30px; padding:20px; background:rgba(201,168,76,0.1); border-radius:15px; text-align:center;">';
-  resHtml += '<button class="btn-next" onclick="window.openLine()" style="width:100%;">LINEでさらに詳しく鑑定する</button>';
+  resHtml += '<div style="margin-top:30px; padding:25px; background:rgba(201,168,76,0.1); border-radius:20px; text-align:center; border:1px solid rgba(201,168,76,0.3);">';
+  resHtml += '<p style="font-size:0.9rem; margin-bottom:20px;">より詳細な鑑定はLINEにて承ります。</p>';
+  resHtml += '<button class="btn-next" onclick="window.openLine()" style="width:100%; font-weight:bold;">LINEでさらに詳しく鑑定する</button>';
   resHtml += '</div></div>';
+
   panel.innerHTML = resHtml;
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 window.openLine = function() {
