@@ -439,10 +439,9 @@ window.startSelection = function(count) {
     html += '<button class="btn-category" onclick="window.selectCategory(this.dataset.cat)" data-cat="' + c[0].replace(/"/g,'&quot;') + '">' + c[0] + '<span>' + c[1] + '</span></button>'; 
   });
   
-  html += '</div>';
+    html += '</div>';
   panel.innerHTML = html;
 };
-
 
 window.selectCategory = function(category) {
   window.selectedCategory = category;
@@ -484,6 +483,7 @@ window.proceedToDeck = function() {
     html += '<div class="slot-wrapper"><div class="slot-label" id="label-' + i + '">' + n + lbs[i].en + '<span class="slot-label-jp">' + lbs[i].jp + '</span></div><div class="card-slot" id="slot-' + i + '"></div></div>';
   }
 
+  // --- カード展開エリア（8枚×3段 センタリング + スワイプセンサー） ---
   html += '</div><div class="card-deck" id="card-deck">';
   for (var j = 0; j < CARDS.length; j++) {
     var row = Math.floor(j / 8); 
@@ -496,7 +496,7 @@ window.proceedToDeck = function() {
             'ontouchstart="window.cardTouchStart(event, ' + j + ')" ' +
             'ontouchmove="window.cardTouchMove(event, ' + j + ')" ' +
             'ontouchend="window.cardTouchEnd(event, ' + j + ')" ' +
-            'onclick="window.selectCard(' + j + ')"></div>';
+            'onclick="window.selectCard(' + j + ', this)"></div>';
   }
   html += '</div>';
 
@@ -535,26 +535,20 @@ window.cardTouchMove = function(e, idx) {
 window.cardTouchEnd = function(e, idx) {
   if (!window.isDragging) return;
   window.isDragging = false;
-  
   var currentY = e.changedTouches[0].clientY;
   var diffY = currentY - window.touchStartY;
   var card = document.getElementById('card-' + idx);
   
   if (card) {
-    // 弾いた後の滑らかな戻りや飛びのアニメーション設定
     card.style.transition = "all 0.4s cubic-bezier(0.2, 0, 0.2, 1)";
-    
-    // ★判定：50px以上「上に（マイナス方向）」弾いたら決定
     if (diffY < -50) {
       window.selectCard(idx, card);
     } else {
-      // 弾きが足りない場合は元の位置（CSSで定義した扇形）に戻す
       card.style.transform = ""; 
       card.style.zIndex = "";
     }
   }
 };
-// ここまでがスワイプ制御の終了です
 
 </script>
 </body>
