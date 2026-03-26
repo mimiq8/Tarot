@@ -72,20 +72,24 @@
   .card-slot.active { border-color: rgba(201,168,76,1); box-shadow: 0 0 15px rgba(201,168,76,0.4) inset; transform: translateY(-5px); }
   .card-slot.filled { border-style: solid; border-color: rgba(201,168,76,0.6); background: linear-gradient(135deg, #1d0d42, #3b1d6b); background-image: repeating-linear-gradient(45deg, rgba(201,168,76,0.1) 0, rgba(201,168,76,0.1) 2px, transparent 2px, transparent 6px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); transform: translateY(0); }
   ./* 山札エリアを「扇の土台」にする */
-.card-deck {
+..card-deck {
   position: relative;
   width: 100%;
-  height: 220px; /* 2段分を収める高さ */
-  margin: 30px auto;
+  height: 200px;      /* 2段分を収める高さ */
+  margin-top: 100px;  /* スロットとの間にしっかり距離を作る */
   display: flex;
   justify-content: center;
   perspective: 1000px;
 }
 
-/* カードの共通設定（絶対配置へ） */
+/* カードの共通設定 */
 .card-back {
   position: absolute;
   bottom: 0;
+  /* ★ここが重要：真ん中を基準にする設定 */
+  left: 50%;
+  margin-left: -25px; 
+  
   width: 50px;
   height: 80px;
   background-color: #1d0d42;
@@ -96,33 +100,35 @@
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s;
   box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 0 10px rgba(0,0,0,0.5);
-  transform-origin: center 150%; /* 回転の軸をカードの下に置く */
+  transform-origin: center 150%; 
   flex-shrink: 0;
 }
 
 /* 扇形の計算ロジック */
 .card-back.fan-style {
-  /* 段数(row) 0なら上段、1なら下段 */
-  --row-offset: calc(var(--row) * 70px); 
-  /* 角度と左右のズレ */
-  --angle: calc((var(--i) - 5) * 7deg); 
-  --x-offset: calc((var(--i) - 5) * 25px);
+  /* 段数(row) 0なら上段、1なら下段（間隔を少し詰めて45pxに） */
+  --row-offset: calc(var(--row) * 45px); 
+  /* 角度と左右のズレ（少しスリムにして画面内に収める） */
+  --angle: calc((var(--i) - 5) * 6deg); 
+  --x-offset: calc((var(--i) - 5) * 22px);
 
   transform: translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset))) rotate(var(--angle));
 }
 
 .card-back:hover {
   z-index: 100 !important;
-  transform: translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset) - 15px)) rotate(var(--angle)) scale(1.15);
+  /* ホバー時はさらに上に上がるように (-30px) */
+  transform: translateX(var(--x-offset)) translateY(calc(-1 * var(--row-offset) - 30px)) rotate(var(--angle)) scale(1.15);
   border-color: #c9a84c;
   box-shadow: 0 10px 20px rgba(201,168,76,0.4);
 }
 
 .card-back.selected {
   opacity: 0;
-  transform: translateY(-100px) scale(0.5) rotate(0deg);
+  transform: translateY(-150px) scale(0.5) rotate(0deg);
   pointer-events: none;
 }
+
 
   .result-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(201,168,76,.15); border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center; animation: fadeUp 0.6s ease both; }
   .card-label { font-size: 10px; color: #9b7e4a; letter-spacing: 3px; margin-bottom: 10px; display: inline-block; border: 1px solid #9b7e4a; padding: 2px 10px; border-radius: 20px; }
