@@ -72,9 +72,48 @@
   .card-slot.active { border-color: rgba(201,168,76,1); box-shadow: 0 0 15px rgba(201,168,76,0.4) inset; transform: translateY(-5px); }
   .card-slot.filled { border-style: solid; border-color: rgba(201,168,76,0.6); background: linear-gradient(135deg, #1d0d42, #3b1d6b); background-image: repeating-linear-gradient(45deg, rgba(201,168,76,0.1) 0, rgba(201,168,76,0.1) 2px, transparent 2px, transparent 6px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); transform: translateY(0); }
   .card-deck { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; animation: fadeUp 0.8s ease both; }
-  .card-back { width: 40px; height: 65px; background: linear-gradient(135deg, #1d0d42, #3b1d6b); border: 1px solid rgba(201,168,76,0.5); border-radius: 4px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 8px rgba(0,0,0,0.6); background-image: repeating-linear-gradient(45deg, rgba(201,168,76,0.1) 0, rgba(201,168,76,0.1) 2px, transparent 2px, transparent 6px); flex-shrink: 0; }
-  .card-back:hover { transform: translateY(-8px); border-color: #c9a84c; box-shadow: 0 8px 15px rgba(201,168,76,0.4); }
-  .card-back.selected { opacity: 0; transform: translateY(-30px) scale(0.8); pointer-events: none; transition: all 0.4s; }
+  ./* 1. 通常時：幾何学模様と深い紫で神秘的に */
+.card-back {
+  width: 45px; /* 少しサイズアップしてカード感を強調 */
+  height: 72px;
+  background-color: #1d0d42; /* 深い紫のベース */
+  /* 神秘的なひし形パターンのSVG */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path d="M10 0 L20 10 L10 20 L0 10 Z" fill="none" stroke="rgba(201,168,76,0.3)" stroke-width="0.5"/><circle cx="10" cy="10" r="1" fill="rgba(201,168,76,0.2)"/></svg>');
+  background-size: 20px 20px;
+  border: 1px solid rgba(201,168,76,0.5);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 0 10px rgba(0,0,0,0.5);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 高級感を出す光の反射エフェクト */
+.card-back::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
+  pointer-events: none;
+}
+
+/* 2. ホバー時：上に浮き上がりつつ、少しだけ傾けて「選んでる感」を出す */
+.card-back:hover {
+  transform: translateY(-12px) rotate(2deg); /* 縦移動とわずかな回転 */
+  border-color: #c9a84c;
+  box-shadow: 0 12px 20px rgba(201,168,76,0.4);
+  z-index: 10; /* 重なっている時に一番上に来るように */
+}
+
+/* 3. 選択（決定）時：フワッと消えていく演出 */
+.card-back.selected {
+  opacity: 0;
+  transform: translateY(-40px) scale(0.8) rotate(-5deg);
+  pointer-events: none;
+  transition: all 0.5s ease-out;
+}
   .result-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(201,168,76,.15); border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center; animation: fadeUp 0.6s ease both; }
   .card-label { font-size: 10px; color: #9b7e4a; letter-spacing: 3px; margin-bottom: 10px; display: inline-block; border: 1px solid #9b7e4a; padding: 2px 10px; border-radius: 20px; }
   .card-img-wrap { display: flex; justify-content: center; margin-bottom: 15px; }
