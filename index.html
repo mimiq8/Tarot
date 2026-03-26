@@ -628,15 +628,27 @@ window.selectCard = function(idx, element) {
 window.updateSelectionUI = function() {
   var guide = document.getElementById("selection-guide");
   if (!guide) return;
+  
   var lbs = (window.requiredCount === 4) ? ["あなたの気持ち","相手の気持ち","二人の状況","二人の未来"] :
             (window.requiredCount === 3) ? ["過去","現在","未来"] :
             (window.requiredCount === 2) ? [window.choiceA, window.choiceB] : ["鑑定結果"];
+    
   if (window.selectedCards.length < window.requiredCount) {
-    guide.innerHTML = '【' + (window.selectedCards.length + 1) + '枚目：<span style="color:#c9a84c;">' + lbs[window.selectedCards.length] + '</span>】を選んでください';
+    var nextLabel = lbs[window.selectedCards.length];
+    // ★ここを修正：メイン指示の下に、小さく操作方法を添える
+    guide.innerHTML = `
+      <div style="margin-bottom: 5px;">
+        【${window.selectedCards.length + 1}枚目：<span style="color:#c9a84c;">${nextLabel}</span>】を選んでください
+      </div>
+      <div style="font-size: 0.8rem; color: rgba(232, 220, 200, 0.6); font-weight: normal; margin-top: 4px;">
+        下のカードを指でなぞって選び、上にスワイプすると決定します
+      </div>
+    `;
   } else {
-    guide.innerText = "鑑定中...";
+    guide.innerText = "すべてのカードが揃いました。鑑定中...";
   }
 };
+
 
 window.showResult = function() {
   const panel = document.getElementById("main-panel");
