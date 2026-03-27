@@ -684,29 +684,72 @@ window.showResult = function() {
 window.openLine = function() {
   const selectedData = window.selectedCards.map(idx => window.shuffledDeck[idx]);
   
-  let copyText = "【タロット鑑定結果】\n\n";
+  // 1. 【悩み事】＋【カード名】のみを抽出（余計な鑑定文はカット！）
+  let copyText = "【鑑定依頼：相談内容】\n";
+  // window.preMemo（最初に入力した悩み）を反映
+  copyText += (window.preMemo && window.preMemo.trim() !== "") ? window.preMemo : "（未入力）";
+  copyText += "\n\n------------------\n";
+  copyText += "【引いたカードの情報】\n";
+
   selectedData.forEach((data, i) => {
     let label = (window.requiredCount === 4) ? ["あなたの気持ち","相手の気持ち","二人の状況","二人の未来"][i] :
-                (window.requiredCount === 3) ? ["過去","現在","未来"] :
+                (window.requiredCount === 3) ? ["過去","現在","未来"][i] :
                 (window.requiredCount === 2) ? [window.choiceA, window.choiceB][i] : "結果";
-    
     const cardTitle = data && data.name ? data.name : "不明";
-    // ★ここが抜けていた犯人：本文(positive)もコピーに含める
-    const cardBody = data && data.positive ? data.positive : "";
-    
     copyText += `■${label}: ${cardTitle}\n`;
-    copyText += `${cardBody}\n\n`;
   });
-  copyText += "この結果に基づいた、より詳細なアドバイスをお願いします！";
+  
+  copyText += "------------------\n";
+  copyText += "この内容でロジカル鑑定をお願いします！";
 
+  // 2. クリップボードにコピー
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(copyText).then(() => {
-      alert("「鑑定結果と内容」をコピーしました！\nLINEに貼り付けて送ってください。");
+      // ★URLの出ない「独自ポップアップ」を呼び出し
+      window.showCustomAlert();
+    }).catch(() => {
       window.open("https://line.me/R/ti/p/@796tkxeg", "_blank");
-    }).catch(() => { window.open("https://line.me/R/ti/p/@796tkxeg", "_blank"); });
+    });
   } else {
     window.open("https://line.me/R/ti/p/@796tkxeg", "_blank");
   }
+};
+
+// 独自ポップアップ（ドメイン名非表示・ブランドデザイン版）
+window.showCustomAlert = function() {
+  const old = document.getElementById('custom-alert');
+  if (old) old.remove();
+
+  const alertDiv = document.createElement('div');
+  alertDiv.id = 'custom-alert';
+  alertDiv.style.cssText = `
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: rgba(20, 20, 30, 0.95); border: 1px solid #c9a84c; border-radius: 20px;
+    padding: 30px; text-align: center; z-index: 10000; width: 85%; max-width: 320px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8); backdrop-filter: blur(10px); color: #fff;
+    font-family: sans-serif;
+  `;
+
+  alertDiv.innerHTML = `
+    <h3 style="color:#c9a84c; margin-bottom:15px; font-size:1.1rem; letter-spacing:1px;">PREPARED</h3>
+    <p style="font-size:0.9rem; line-height:1.6; margin-bottom:25px; color:#e8dcc8;">
+      相談内容とカード情報を保存しました。<br>LINEに貼り付けて鑑定を依頼してください。
+    </p>
+    <button onclick="window.closeAlertAndGo()" style="
+      background: linear-gradient(135deg, #c9a84c 0%, #a68a3d 100%);
+      border: none; border-radius: 12px; padding: 15px 30px; color: #1a1a1a;
+      font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem;
+    ">LINEへ移動する</button>
+  `;
+
+  document.body.appendChild(alertDiv);
+};
+
+// ポップアップを閉じてLINEへ移動
+window.closeAlertAndGo = function() {
+  const alert = document.getElementById('custom-alert');
+  if (alert) alert.remove();
+  window.open("https://line.me/R/ti/p/@796tkxeg", "_blank");
 };
 </script>
 </body>
