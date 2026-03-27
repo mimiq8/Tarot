@@ -683,20 +683,30 @@ window.showResult = function() {
 
 window.openLine = function() {
   const selectedData = window.selectedCards.map(idx => window.shuffledDeck[idx]);
-  let copyText = "【鑑定結果】\n";
+  
+  let copyText = "【タロット鑑定結果】\n\n";
   selectedData.forEach((data, i) => {
     let label = (window.requiredCount === 4) ? ["あなたの気持ち","相手の気持ち","二人の状況","二人の未来"][i] :
-                (window.requiredCount === 3) ? ["過去","現在","未来"][i] :
+                (window.requiredCount === 3) ? ["過去","現在","未来"] :
                 (window.requiredCount === 2) ? [window.choiceA, window.choiceB][i] : "結果";
-    copyText += `${label}: ${data.name || "不明"}\n`;
+    
+    const cardTitle = data && data.name ? data.name : "不明";
+    // ★ここが抜けていた犯人：本文(positive)もコピーに含める
+    const cardBody = data && data.positive ? data.positive : "";
+    
+    copyText += `■${label}: ${cardTitle}\n`;
+    copyText += `${cardBody}\n\n`;
   });
-  copyText += "\nこの結果について詳しく教えてください。";
+  copyText += "この結果に基づいた、より詳細なアドバイスをお願いします！";
+
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(copyText).then(() => {
-      alert("結果をコピーしました！LINEに貼り付けて送ってください。");
+      alert("「鑑定結果と内容」をコピーしました！\nLINEに貼り付けて送ってください。");
       window.open("https://line.me/R/ti/p/@796tkxeg", "_blank");
     }).catch(() => { window.open("https://line.me/R/ti/p/@796tkxeg", "_blank"); });
-  } else { window.open("https://line.me/R/ti/p/@796tkxeg", "_blank"); }
+  } else {
+    window.open("https://line.me/R/ti/p/@796tkxeg", "_blank");
+  }
 };
 </script>
 </body>
